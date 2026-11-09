@@ -1,7 +1,7 @@
 # Lithotheque Server
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/GeoStratum/lithotheque-server/main/docs/assets/geostratum_logo.svg" alt="GeoStratum Logo" width="100" height="100" onerror="this.style.display='none'">
+  <img src="https://raw.githubusercontent.com/GeoStratum/GeoStratum-logos/main/assets/square/standard/geostratum-logo-1024x1024.png" alt="GeoStratum Logo" width="120" height="120">
 </p>
 
 <p align="center">
