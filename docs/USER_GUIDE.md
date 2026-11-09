@@ -1,37 +1,53 @@
-# Base Camp Operations & GIS Guide
+# Base Camp Operations & User Guide
 
-This guide covers day-to-day operation of Lithotheque Server during a field campaign.
-
----
-
-## 1. Connecting Field Mobile Devices
-
-Lithotheque utilizes zero-friction on-screen QR code pairing.
-
-1. Turn on your base camp computer and open the dashboard (`http://localhost:8080`).
-2. Ensure field mobile phones and the base camp computer are connected to the same local field Wi-Fi network (or portable 4G hotspot).
-3. On the right side of the dashboard, locate the **Field Pairing QR Code**.
-4. Have the students or technicians open the **Lithotheque** application on their phone and scan the QR code.
-5. The device is immediately paired. When users record geological observations, clicking **"Sync"** transfers their records, photographs, and measurements directly to your base camp hub.
+This guide covers day-to-day base camp operations, real-time observation management, structural geology calculations, and consolidated GIS data exporting with **Lithotheque Base Camp Hub**.
 
 ---
 
-## 2. Real-Time Field Monitoring
+## 1. Web Dashboard Interface Overview
 
-The dashboard is structured into three main synchronized panels:
+The Lithotheque Hub user interface is structured into three specialized workspace panels optimized for large monitors and field laptops:
 
-- **Left Panel (Folders & Observations):** Browse and filter incoming data by field folder, rock type (Igneous, Sedimentary, Metamorphic), author, or specific geological tags. Selecting a folder or tag filters the entire workspace in real time.
-- **Center Panel (Master Map):** Displays all incoming points with official geological symbols (Strike and Dip orientation) overlaid on top of base topography and regional geological survey layers (such as BRGM 1/50,000 WMS services).
-- **Right Panel (Stereographic Projection):** Plots structural orientation measurements in real time. You can toggle between **Schmidt (Equal-Area)** and **Wulff (Equal-Angle)** projections to examine fault poles and planar distributions across teams.
+```
+┌─────────────────────────┬───────────────────────────────────────────┬─────────────────────────┐
+│     LEFT SIDEBAR        │              CENTER PANEL                 │      RIGHT SIDEBAR      │
+│  - Observation Tree     │  - High-Definition Leaflet Map            │  - Dynamic Stereonet    │
+│  - Full-Text Search     │  - Structural Strike/Dip T-Symbols        │    (Wulff / Schmidt)    │
+│  - Rock Type Filter     │  - BRGM 1/50,000 WMS Geological Layer     │  - QR Enrollment Box    │
+│  - Tag Filtering        │  - Outcrop Inspection Popup               │  - One-Click GIS Export │
+└─────────────────────────┴───────────────────────────────────────────┴─────────────────────────┘
+```
 
 ---
 
-## 3. Exporting Consolidated GIS Data
+## 2. Real-Time Geological Map
 
-At the end of a field day or campaign, the instructor or team lead can download the unified dataset in multiple formats from the **Consolidated Exports Center** at the bottom right of the screen:
+- **Structural Geology T-Symbols**: Each planar measurement (bedding, cleavage, schistosity, fault plane) is rendered on the map with its standardized structural dip symbol showing strike orientation and dip angle.
+- **BRGM 1/50,000 Geological WMS Layer**: Toggle and adjust the opacity of the official French Geological Survey (BRGM) map overlay using the slider in the top-right corner to cross-reference field observations with regional geology.
+- **Outcrop Detail Inspector**: Clicking any point opens a modal with high-resolution field photos, lithological descriptions, author, timestamps, GPS accuracy, and structural measurements.
 
-1. **GeoPackage (`.gpkg`):** Recommended for **QGIS** and **ArcGIS**. Imports all points, structural symbols, and attribute tables in a single standardized file.
-2. **GeoJSON:** Ideal for web maps and custom GIS viewers.
-3. **CSV Spreadsheet:** Contains all coordinates, elevations, and structural strike/dip values for statistical evaluation or geochemical plotting in Excel, R, or Python.
-4. **GPX / KML:** Waypoints and descriptions formatted for handheld GPS devices and Google Earth 3D exploration.
-5. **Full Archive (`.zip`):** Complete export containing all high-resolution field photos, annotated sketches, and JSON datasets.
+---
+
+## 3. Dynamic Stereographic Net (Stereonet)
+
+Lithotheque Hub features a real-time structural geology computation engine directly embedded into the web interface:
+
+- **Projection Types**:
+  - **Schmidt Projection (Lambert Equal-Area)**: Default for density contouring and statistical clustering.
+  - **Wulff Projection (Equal-Angle / Stereographic)**: For angular measurements and true circular representations.
+- **Dynamic Filtering**: The stereonet automatically recalculates and updates in real time based on active filters (e.g., filter by rock type *"Metamorphic"* or tag *"Fold hinge"* to isolate specific deformation phases).
+
+---
+
+## 4. Master GIS Exports
+
+Click any of the consolidated export buttons in the right sidebar to download an updated dataset:
+
+| Format | Extension | Intended Usage |
+| :--- | :--- | :--- |
+| **GeoPackage** | `.gpkg` | Master project file ready for drag-and-drop into **QGIS** or **ArcGIS Pro** with pre-styled symbology. |
+| **GeoJSON** | `.geojson` | Standard vector data for web applications, Python (GeoPandas), and Mapbox. |
+| **Spreadsheet** | `.csv` | Tabular data for statistical analysis, geochemical correlations, Excel, and R. |
+| **Garmin GPS** | `.gpx` | Waypoints and tracks for field handheld GPS devices. |
+| **Google Earth** | `.kml` | 3D outcrop visualizations with field photo markers. |
+| **Complete Archive**| `.zip` | Full uncompressed package containing original high-resolution photos, metadata, and SQLite database. |

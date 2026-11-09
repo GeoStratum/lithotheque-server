@@ -1,102 +1,117 @@
-# Architecture Sécurisée & Configuration Reverse Proxy
+# Reverse Proxy, TLS & Production Security Guide
 
-Ce document présente la topologie de production recommandée pour exposer le serveur **Lithotheque Hub** sur Internet ou sur un réseau d'entreprise, tout en maintenant une isolation stricte des couches critiques.
-
----
-
-## 1. Schéma d'Architecture Réseau & Flux
-
-```text
-[ Terminaux Mobiles Terrain (Lithothèque Android) ]
-      │                                       │
-      │ 1. Synchronisation Peer-to-Peer        │ 2. Consultation Dashboard / Exports
-      │    (UDP 51820 Chiffré WireGuard)       │    (HTTPS 443 Chiffré TLS 1.3)
-      ▼                                       ▼
-┌──────────────────────────────────────────────────────────────┐
-│ SERVEUR D'ACCUEIL / REVERSE PROXY                            │
-│                                                              │
-│  ┌────────────────────────┐      ┌────────────────────────┐  │
-│  │ WireGuard Tunnel UDP   │      │ Reverse Proxy (Nginx)  │  │
-│  │ Port 51820 (Direct)    │      │ Port 443 / 80 (TLS)    │  │
-│  └───────────┬────────────┘      └───────────┬────────────┘  │
-│              │                               │               │
-│              │ (Local Kernel/Interface)      │ (Proxy Pass)  │
-│              │                               │ 127.0.0.1:8080│
-│              ▼                               ▼               │
-│  ┌────────────────────────────────────────────────────────┐  │
-│  │ LITHOTHEQUE BASE CAMP HUB (Headless Daemon / Service)  │  │
-│  │                                                        │  │
-│  │  • Moteur Stéréonet Float64 (Schmidt / Wulff)          │  │
-│  │  • Contrôle de Licence Hors-Ligne Ed25519             │  │
-│  │  • Base Consolidée SQLite (Room v12 WAL Mode)          │  │
-│  │  • Générateur Master GeoPackage & GeoJSON              │  │
-│  └────────────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────────────┘
-```
+This document details how to expose **Lithotheque Base Camp Hub** securely using industry-standard reverse proxies (Nginx, Caddy), configure TLS certificates, and harden the server against unauthorized access.
 
 ---
 
-## 2. Déploiement Nginx (Recommandé)
+## 1. Network Topology & Isolation Principles
 
-Le fichier de configuration complet est disponible dans [`deploy/reverse-proxy/nginx/litho-hub.conf`](file:///d:/Dev/Lithoteque/litho-hub/deploy/reverse-proxy/nginx/litho-hub.conf).
-
-### Points clés de la configuration Nginx :
-1. **Terminaison SSL/TLS** : Utilisation exclusive de TLSv1.2 et TLSv1.3 avec chiffrement fort.
-2. **Rate Limiting** :
-   ```nginx
-   limit_req_zone $binary_remote_addr zone=litho_limit:10m rate=10r/s;
-   ```
-   Protège contre le déni de service et la saturation CPU lors des calculs géologiques intensifs.
-3. **Volume de transfert (Payload Size)** :
-   ```nginx
-   client_max_body_size 250M;
-   ```
-   Permet le téléchargement fluide des conteneurs `.litho` contenant des centaines de photographies géologiques haute résolution.
-4. **Sonde de Surveillance `/api/health`** :
-   Permet aux outils de supervision (Uptime Kuma, Zabbix, Datadog) d'interroger l'état sans être affectés par les limites de débit.
+By default, Lithotheque Hub listens exclusively on `127.0.0.1:8080`. This architecture ensures:
+1. **Zero Unencrypted Exposure**: HTTP traffic is never broadcasted in cleartext over external networks.
+2. **Encapsulated Mobile Sync**: Mobile synchronization occurs inside an encrypted WireGuard UDP tunnel on port `51820/UDP`.
+3. **Mandatory TLS Termination**: All external web dashboard access must pass through a hardened reverse proxy terminating TLS 1.3.
 
 ---
 
-## 3. Déploiement Caddy (Alternative Automatique)
+## 2. Nginx Reverse Proxy Configuration
 
-Le fichier Caddyfile est disponible dans [`deploy/reverse-proxy/caddy/Caddyfile`](file:///d:/Dev/Lithoteque/litho-hub/deploy/reverse-proxy/caddy/Caddyfile).
+Create `/etc/nginx/sites-available/litho-hub.conf`:
 
-Avantage : Caddy obtient et renouvelle automatiquement les certificats Let's Encrypt / ZeroSSL sans intervention humaine.
+```nginx
+server {
+    listen 80;
+    server_name hub.geostratum.local hub.yourcompany.com;
+    return 301 https://$host$request_uri;
+}
 
-```caddy
-hub.mondomaine.org {
-    encode gzip zstd
-    request_body {
-        max_size 250MB
-    }
-    reverse_proxy 127.0.0.1:8080 {
-        health_uri /api/health
-        health_interval 30s
+server {
+    listen 443 ssl http2;
+    server_name hub.geostratum.local hub.yourcompany.com;
+
+    ssl_certificate /etc/ssl/certs/litho-hub.crt;
+    ssl_certificate_key /etc/ssl/private/litho-hub.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    # Security Headers (WCAG & OWASP compliant)
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    # Maximum upload size for heavy field zip archives and photos
+    client_max_body_size 500M;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 300s;
+        proxy_send_timeout 300s;
     }
 }
 ```
 
----
-
-## 4. Règles de Pare-feu Minimales (UFW sous Linux)
-
+Enable the configuration:
 ```bash
-# Bloquer tout le trafic entrant par défaut
-sudo ufw default deny incoming
-sudo ufw default allow outgoing
-
-# Autoriser l'administration SSH (adapter le port si personnalisé)
-sudo ufw allow 22/tcp comment "Administration SSH"
-
-# Autoriser le Reverse Proxy Web
-sudo ufw allow 80/tcp comment "HTTP Redirection"
-sudo ufw allow 443/tcp comment "HTTPS Dashboard & API"
-
-# Autoriser la synchronisation terrain WireGuard
-sudo ufw allow 51820/udp comment "WireGuard Lithotheque Hub"
-
-# Activer le pare-feu
-sudo ufw enable
+sudo ln -s /etc/nginx/sites-available/litho-hub.conf /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
 ```
 
-> **Attention** : Ne jamais exécuter `ufw allow 8080/tcp`. Le port 8080 doit rester strictement confiné à `127.0.0.1` (localhost).
+---
+
+## 3. Caddy Reverse Proxy (Automatic HTTPS)
+
+For automated Let's Encrypt or local CA certificates, create `/etc/caddy/Caddyfile`:
+
+```caddy
+hub.yourcompany.com {
+    reverse_proxy 127.0.0.1:8080
+    
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+    }
+    
+    request_body {
+        max_size 500MB
+    }
+}
+```
+
+Restart Caddy:
+```bash
+sudo systemctl reload caddy
+```
+
+---
+
+## 4. Linux Firewall (UFW) Hardening
+
+Configure Uncomplicated Firewall (UFW) to enforce strict boundary defense:
+
+```bash
+# Allow SSH management
+sudo ufw allow 22/tcp
+
+# Allow Web Access (Reverse Proxy only)
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+
+# Allow WireGuard Field Synchronization
+sudo ufw allow 51820/udp
+
+# Explicitly deny direct external access to internal port 8080
+sudo ufw deny 8080/tcp
+
+# Enable firewall
+sudo ufw enable
+sudo ufw status verbose
+```

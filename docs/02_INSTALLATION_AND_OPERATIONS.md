@@ -1,101 +1,109 @@
-# Guide d'Installation et d'Exploitation 24/7
+# Installation & Operations Manual
 
-Ce document décrit en détail la procédure d'installation, de configuration et de supervision continue de **Lithotheque Base Camp Hub** sous Linux et Windows.
+This guide provides end-to-end instructions for deploying, operating, and maintaining **Lithotheque Base Camp Hub** across Debian/Ubuntu Linux and Microsoft Windows environments.
 
 ---
 
-## 1. Déploiement sous Linux (Debian / Ubuntu / Raspberry Pi OS)
+## 1. Linux Installation (Debian / Ubuntu)
 
-### A. Installation du paquet `.deb`
+### Step 1: Package Installation
+Download the official `.deb` package matching your server's architecture from the [Releases page](https://github.com/GeoStratum/lithotheque-server/releases):
 
 ```bash
-# Pour architecture x86_64
-sudo dpkg -i litho-hub_1.0.0_amd64.deb
+# For Intel / AMD 64-bit servers:
+sudo dpkg -i litho-hub_v1.0.0_amd64.deb
 
-# Pour architecture ARM64 (ex: Raspberry Pi 5 ou serveurs Graviton)
-sudo dpkg -i litho-hub_1.0.0_arm64.deb
-
-# Résolution des dépendances système si nécessaire
-sudo apt-get install -f -y
+# For ARM64 servers (Raspberry Pi 4/5, Graviton, Ampere):
+sudo dpkg -i litho-hub_v1.0.0_arm64.deb
 ```
 
-### B. Emplacements Système
-* **Binaire exécutable** : `/usr/local/bin/litho-hub`
-* **Répertoire de configuration** : `/etc/litho-hub/`
-* **Fichier de configuration** : `/etc/litho-hub/config.json`
-* **Licence cryptographique Ed25519** : `/etc/litho-hub/license.key`
-* **Base de données géologique** : `/etc/litho-hub/data/litho_hub.db`
-* **Dossier des exports géologiques** : `/etc/litho-hub/exports/`
-* **Service systemd** : `/etc/systemd/system/litho-hub.service`
+The Debian package automatically configures:
+- Binary deployed to `/usr/local/bin/litho-hub`.
+- Dedicated system service user `litho-hub`.
+- Configuration and license directory at `/etc/litho-hub/`.
+- Data and GIS export directory at `/var/lib/litho-hub/data/`.
+- Systemd service unit at `/etc/systemd/system/litho-hub.service`.
 
-### C. Gestion du Service systemd (Headless 24/7)
-Le service est configuré pour démarrer automatiquement et redémarrer instantanément en cas de défaillance.
+### Step 2: License Deployment
+Deposit your signed `license.key` into `/etc/litho-hub/` and assign permissions:
 
 ```bash
-# Vérifier l'état du service
-sudo systemctl status litho-hub
+sudo cp license.key /etc/litho-hub/license.key
+sudo chown -R litho-hub:litho-hub /etc/litho-hub/
+sudo chmod 600 /etc/litho-hub/license.key
+```
 
-# Démarrer ou redémarrer le service
-sudo systemctl restart litho-hub
-
-# Activer au démarrage système
+### Step 3: Service Management
+```bash
+# Enable automatic startup on boot
 sudo systemctl enable litho-hub
 
-# Suivre les journaux d'activité en temps réel
-sudo journalctl -u litho-hub -f --no-tail
+# Start the service
+sudo systemctl start litho-hub
+
+# Check operational status
+sudo systemctl status litho-hub
+
+# Stream real-time operational logs
+sudo journalctl -u litho-hub -f
 ```
 
 ---
 
-## 2. Déploiement sous Windows & Windows Server
+## 2. Microsoft Windows Deployment
 
-### A. Installation via le paquet `.msi`
-L'installateur peut être exécuté graphiquement ou de manière entièrement silencieuse pour les déploiements d'entreprise (GPO / Intune / SCCM) :
+### Step 1: Directory Setup
+Create the standard application directories in PowerShell (Run as Administrator):
 
 ```powershell
-# Installation silencieuse standard (x64)
-msiexec /i "Lithotheque_Hub_Setup_x64.msi" /qn /norestart
-
-# Installation silencieuse ARM64 (Surface ARM, Snapdragon X)
-msiexec /i "Lithotheque_Hub_Setup_arm64.msi" /qn /norestart
+New-Item -ItemType Directory -Force -Path "C:\Program Files\Lithotheque Hub"
+New-Item -ItemType Directory -Force -Path "C:\ProgramData\Lithotheque Hub\data"
+New-Item -ItemType Directory -Force -Path "C:\ProgramData\Lithotheque Hub\exports"
 ```
 
-### B. Emplacements Windows
-* **Binaire exécutable** : `C:\Program Files\Lithotheque Hub\litho-hub.exe`
-* **Données et configuration partagée** : `C:\ProgramData\Lithotheque Hub\`
-* **Fichier de configuration** : `C:\ProgramData\Lithotheque Hub\config.json`
-* **Fichier de licence** : `C:\ProgramData\Lithotheque Hub\license.key`
-* **Base de données** : `C:\ProgramData\Lithotheque Hub\data\litho_hub.db`
-
-### C. Gestion du Service Windows (Session 0)
-Le service tourne silencieusement en arrière-plan sans ouvrir d'invite de commande CMD :
+### Step 2: Binary & License Placement
 ```powershell
-# Vérifier le statut du service
-Get-Service -Name LithoHubService
-
-# Redémarrer le service
-Restart-Service -Name LithoHubService
-
-# Ouvrir la console de gestion des services
-services.msc
+# Copy executable and license
+Copy-Item litho-hub.exe "C:\Program Files\Lithotheque Hub\"
+Copy-Item license.key "C:\ProgramData\Lithotheque Hub\license.key"
 ```
 
----
-
-## 3. Configuration du fichier `config.json`
+### Step 3: Configuration File (`config.json`)
+Create `C:\ProgramData\Lithotheque Hub\config.json`:
 
 ```json
 {
   "listen_addr": "127.0.0.1:8080",
-  "data_dir": "/etc/litho-hub/data",
-  "export_dir": "/etc/litho-hub/exports",
-  "license_path": "/etc/litho-hub/license.key",
+  "data_dir": "C:\\ProgramData\\Lithotheque Hub\\data",
+  "export_dir": "C:\\ProgramData\\Lithotheque Hub\\exports",
+  "license_path": "C:\\ProgramData\\Lithotheque Hub\\license.key",
   "wireguard_port": 51820
 }
 ```
 
-* `listen_addr` : Adresse d'écoute locale du tableau de bord Web et des API (laisser sur `127.0.0.1:8080` pour une sécurité maximale derrière un Reverse Proxy).
-* `data_dir` : Dossier racine où réside la base SQLite WAL et les conteneurs `.litho`.
-* `export_dir` : Répertoire de stockage des couches SIG générées (`.gpkg`, `.csv`, `.geojson`).
-* `license_path` : Emplacement de la clé Ed25519 émise par GeoStratum.
-* `wireguard_port` : Port UDP d'écoute pour les communications d'enrôlement direct.
+### Step 4: Register as a Windows Service (Session 0)
+Using PowerShell:
+
+```powershell
+New-Service -Name "LithoHub" `
+            -BinaryPathName '"C:\Program Files\Lithotheque Hub\litho-hub.exe" -config "C:\ProgramData\Lithotheque Hub\config.json"' `
+            -DisplayName "Lithotheque Base Camp Hub" `
+            -Description "Lithotheque Sovereign Field Synchronization Service" `
+            -StartupType Automatic
+
+Start-Service -Name "LithoHub"
+Get-Service -Name "LithoHub"
+```
+
+---
+
+## 3. Operational Health Checks
+
+Verify that the local hub is healthy and operational:
+
+```bash
+curl -s http://127.0.0.1:8080/api/health
+# Response: {"status":"healthy","uptime_seconds":42}
+
+curl -s http://127.0.0.1:8080/api/status | jq .
+```
