@@ -22,7 +22,7 @@ jobs:
       - name: Checkout Façade Repository
         uses: actions/checkout@v4
 
-      # Clone éphémère du code source privé depuis GitHub (interne à l'organisation GeoStratum)
+      # Clone éphémère du code source privé depuis GitHub
       - name: Fetch Private Source Code from Private GitHub Repo
         uses: actions/checkout@v4
         with:
@@ -35,10 +35,10 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.23'
+          cache: false
 
       - name: Install Hardening Tools
         run: |
-          go install mvdan.cc/garble@v0.13.0
           sudo apt-get update && sudo apt-get install -y upx-ucl dpkg-dev
 
       - name: Set Release Version
@@ -56,7 +56,7 @@ jobs:
         run: |
           mkdir -p .core_source/packaging/debian/usr/local/bin
           cd .core_source
-          GOOS=linux GOARCH=amd64 garble -literals build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o packaging/debian/usr/local/bin/litho-hub ./cmd/litho-hub
+          GOOS=linux GOARCH=amd64 go build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o packaging/debian/usr/local/bin/litho-hub ./cmd/litho-hub
           upx --best packaging/debian/usr/local/bin/litho-hub
           chmod 755 packaging/debian/DEBIAN/postinst packaging/debian/DEBIAN/prerm packaging/debian/usr/local/bin/litho-hub
           dpkg-deb --build packaging/debian ../litho-hub_${{ steps.vars.outputs.version }}_amd64.deb
@@ -67,7 +67,7 @@ jobs:
         run: |
           mkdir -p .core_source/packaging/debian-arm64/usr/local/bin
           cd .core_source
-          GOOS=linux GOARCH=arm64 garble -literals build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o packaging/debian-arm64/usr/local/bin/litho-hub ./cmd/litho-hub
+          GOOS=linux GOARCH=arm64 go build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o packaging/debian-arm64/usr/local/bin/litho-hub ./cmd/litho-hub
           upx --best packaging/debian-arm64/usr/local/bin/litho-hub
           chmod 755 packaging/debian-arm64/DEBIAN/postinst packaging/debian-arm64/DEBIAN/prerm packaging/debian-arm64/usr/local/bin/litho-hub
           dpkg-deb --build packaging/debian-arm64 ../litho-hub_${{ steps.vars.outputs.version }}_arm64.deb
@@ -78,7 +78,7 @@ jobs:
         run: |
           mkdir -p dist/windows/x64
           cd .core_source
-          GOOS=windows GOARCH=amd64 garble -literals build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o ../dist/windows/x64/litho-hub.exe ./cmd/litho-hub
+          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o ../dist/windows/x64/litho-hub.exe ./cmd/litho-hub
           upx --best ../dist/windows/x64/litho-hub.exe
           cd ..
 
@@ -87,8 +87,8 @@ jobs:
         run: |
           mkdir -p dist/windows/arm64
           cd .core_source
-          GOOS=windows GOARCH=arm64 garble -literals build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o ../dist/windows/arm64/litho-hub.exe ./cmd/litho-hub
-          upx --best ../dist/windows/arm64/litho-hub.exe
+          GOOS=windows GOARCH=arm64 go build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o ../dist/windows/arm64/litho-hub.exe ./cmd/litho-hub
+          # Note: UPX ne supporte pas l'architecture Windows ARM64 PE, conservation du binaire dépouillé
           cd ..
 
       # Nettoyage des sources avant publication
@@ -121,7 +121,7 @@ jobs:
             ---
 
             ### 🛡️ Security & Integrity
-            - **Hardened Execution**: Obfuscated with Garble, stripped symbol tables, and UPX compressed.
+            - **Hardened Execution**: Stripped symbol tables (`-ldflags="-s -w -buildid="`) and UPX compression.
             - **Post-Quantum Ready**: Compatible with NIST FIPS 204 (ML-DSA) and Ed25519 offline licenses.
             - **Anti-Reverse Engineering**: Scrambled SHA-512 internal key derivation without plain-text keys.
 
