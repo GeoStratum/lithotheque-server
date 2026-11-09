@@ -10,11 +10,11 @@
 
 <p align="center">
   <a href="https://github.com/GeoStratum/lithotheque-server/releases/latest"><img src="https://img.shields.io/badge/Release-v1.0.0-0969da?style=flat-square&logo=github" alt="Latest Release"></a>
-  <a href="https://ghcr.io/geostratum/lithotheque-server"><img src="https://img.shields.io/badge/Container-GHCR%20Docker-2496ed?style=flat-square&logo=docker" alt="Docker Container"></a>
+  <a href="https://ghcr.io/geostratum/lithotheque-server"><img src="https://img.shields.io/badge/Docker-GHCR-2496ed?style=flat-square&logo=docker" alt="Docker Container"></a>
+  <a href="#supported-platforms--architectures"><img src="https://img.shields.io/badge/Platform-Linux%20%7C%20Windows%20%7C%20ARM64-f0883e?style=flat-square" alt="Supported Platforms"></a>
+  <a href="https://wireguard.com"><img src="https://img.shields.io/badge/Network-WireGuard%20P2P-88171a?style=flat-square&logo=wireguard" alt="WireGuard P2P"></a>
+  <a href="#export-formats--gis-interoperability"><img src="https://img.shields.io/badge/GIS-GeoPackage%20%7C%20QGIS-589632?style=flat-square&logo=qgis" alt="GIS Interoperability"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-GeoStratum%20Commercial-blue?style=flat-square" alt="Commercial License"></a>
-  <a href="#supported-platforms--architectures"><img src="https://img.shields.io/badge/Platform-Linux%20%7C%20Windows%20%7C%20Docker-f0883e?style=flat-square" alt="Platforms"></a>
-  <a href="https://github.com/GeoStratum/lithotheque-server/actions/workflows/release.yml"><img src="https://img.shields.io/badge/CI%2FCD-Automated-2ea44f?style=flat-square&logo=githubactions" alt="CI/CD Status"></a>
-  <a href="#accessibility-wcag-22-aa"><img src="https://img.shields.io/badge/WCAG%202.2-Level%20AA%20Compliant-238636?style=flat-square" alt="WCAG 2.2 AA"></a>
 </p>
 
 ---
