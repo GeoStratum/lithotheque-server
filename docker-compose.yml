@@ -1,0 +1,23 @@
+services:
+  litho-hub:
+    image: ghcr.io/geostratum/lithotheque-server:latest
+    container_name: lithotheque-server
+    restart: unless-stopped
+    ports:
+      # Web Dashboard and Management API
+      - "8080:8080/tcp"
+      # WireGuard Peer-to-Peer Mobile Sync
+      - "51820:51820/udp"
+    volumes:
+      # Configuration and License key
+      - ./config:/etc/litho-hub:ro
+      # Geological observations database and photos
+      - ./data:/var/lib/litho-hub/data
+      # Consolidated GIS exports (GeoPackage, GeoJSON, CSV, GPX, KML)
+      - ./exports:/var/lib/litho-hub/exports
+    environment:
+      - TZ=UTC
+    cap_add:
+      - NET_ADMIN
+    security_opt:
+      - no-new-privileges:true

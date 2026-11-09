@@ -1,4 +1,4 @@
-# Lithotheque Base Camp Hub
+# Espace Professionnel : lithotheque-server
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/GeoStratum/lithotheque-server/main/docs/assets/geostratum_logo.svg" alt="GeoStratum Logo" width="100" height="100" onerror="this.style.display='none'">
@@ -10,8 +10,9 @@
 
 <p align="center">
   <a href="https://github.com/GeoStratum/lithotheque-server/releases/latest"><img src="https://img.shields.io/github/v/release/GeoStratum/lithotheque-server?color=blue&label=Latest%20Release" alt="Latest Release"></a>
+  <a href="https://ghcr.io/geostratum/lithotheque-server"><img src="https://img.shields.io/badge/Container-GHCR%20Docker-blue?logo=docker" alt="Docker Container"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-GeoStratum%20Commercial-blue.svg" alt="Commercial License"></a>
-  <a href="#supported-platforms--architectures"><img src="https://img.shields.io/badge/Platform-Linux%20%7C%20Windows%20(x64%20%26%20ARM64)-orange.svg" alt="Platforms"></a>
+  <a href="#supported-platforms--architectures"><img src="https://img.shields.io/badge/Platform-Linux%20%7C%20Windows%20%7C%20Docker%20(x64%20%26%20ARM64)-orange.svg" alt="Platforms"></a>
   <a href="https://github.com/GeoStratum/lithotheque-server/actions"><img src="https://img.shields.io/badge/CI%2FCD-Passing-brightgreen.svg" alt="CI/CD Status"></a>
   <a href="#accessibility-wcag-22-aa"><img src="https://img.shields.io/badge/WCAG%202.2-Level%20AA%20Compliant-success.svg" alt="WCAG 2.2 AA"></a>
 </p>
@@ -20,24 +21,27 @@
 
 ## 🌍 Overview
 
-**Lithotheque Base Camp Hub** (`litho-hub`) is an autonomous, self-hosted edge server engineered specifically for remote geological expeditions, university field geology courses, geotechnical consultancies, and sovereign mining explorations.
+**lithotheque-server** (`litho-hub`) is an autonomous, self-hosted edge server engineered specifically for remote geological expeditions, university field geology courses, geotechnical consultancies, and sovereign mining explorations.
 
-Operating directly on a camp laptop, field rugged tablet, or headless mini-PC (such as Raspberry Pi 5 or Intel NUC), it acts as the centralized offline repository for Android field tablets running the **Lithotheque** application. Field geologists and students synchronize observations, structural measurements (strike, dip, plunge), and high-resolution outcrop photographs over local peer-to-peer Wi-Fi or ad-hoc hotspots—**with zero internet, zero cloud dependencies, and zero third-party tracking.**
+Operating directly on an expedition server, rugged field tablet, Docker container, or headless mini-PC (such as Raspberry Pi 5 or Intel NUC), it acts as the centralized offline repository for mobile devices running the **Lithotheque** application (Android & iOS). Field geologists and students synchronize observations, structural measurements (strike, dip, plunge), and high-resolution outcrop photographs over encrypted WireGuard peer-to-peer Wi-Fi or ad-hoc hotspots—**with zero internet, zero cloud dependencies, and zero third-party tracking.**
 
 ---
 
 ## ⚡ Core Capabilities
 
-- **Zero-Internet Sovereign Field Operation**: Complete autonomy in remote mountainous valleys, underground mines, active quarries, or desert camps.
-- **Frictionless QR Code Enrollment**: Instant device pairing via automated WireGuard VPN tunneling. Field geologists simply scan the dashboard's optical QR code with their mobile device—no accounts, passwords, or emails required on the field.
+- **Zero-Internet Sovereign Field Operation**: Complete autonomy in remote mountainous valleys, underground mines, active quarries, or exploration sites.
+- **Asymmetric Cryptographic Device Binding & QR Code Enrollment**:
+  - Secure optical QR code enrollment with extended asynchronous validity (7 to 30 days) for advance distribution on badges or mission briefs.
+  - Zero static private key leakage: the QR code contains an ephemeral challenge nonce.
+  - Hardware-backed asymmetric key handshake: client device generates an ECDSA P-256 keypair inside hardware (Android `AndroidKeyStore` / Apple `SecureEnclave.P256`), signs the challenge, and permanently binds to the server. Attempting to scan the QR code from another device is strictly blocked.
 - **Master GeoPackage & GIS Consolidation**: Automatically aggregates individual field observations into a consolidated GIS GeoPackage (`.gpkg`), GeoJSON, CSV, GPX, and KML layers ready for instant import into **QGIS** or **ArcGIS**.
 - **Real-Time Interactive Stereonet (Wulff & Schmidt)**: Live computation of structural stereographic projections (density contours, planes, poles, mean direction) using pure Go vector math.
 - **Enterprise-Grade System Reliability**:
   - Pure Go zero-CGO SQLite engine (`modernc.org/sqlite`).
   - Automated atomic SQLite WAL backups and disaster recovery tools.
-  - Native Windows Service (Session 0) and Linux Systemd daemon integration.
+  - Native Windows Service (Session 0), Linux Systemd daemon, and multi-arch Docker container support.
 - **Hardened Multi-Architecture Deployment**:
-  - Native pre-compiled binaries for **Linux (x86_64 and ARM64)** and **Windows (x64 and ARM64 Snapdragon X Elite)**.
+  - Native pre-compiled binaries for **Linux (x86_64 and ARM64)**, **Windows (x64 and ARM64)**, and **Docker Multi-Arch (GHCR)**.
   - Post-Quantum Cryptography readiness (ML-DSA / Crystals-Dilithium & Ed25519 offline license verification).
   - Obfuscated, symbol-stripped binaries with UPX binary compression.
 
@@ -70,12 +74,41 @@ Official releases provide pre-compiled, self-contained packages for standard OS 
 | **Linux Debian / Raspberry Pi** | `aarch64` (ARM64) | Raspberry Pi 4 / 5, AWS Graviton, Ampere Altra | `litho-hub_<version>_arm64.deb` |
 | **Windows Desktop & Server** | `x86_64` (x64) | Windows 10/11, Windows Server 2019/2022/2025 | `litho-hub.exe` |
 | **Windows on ARM** | `ARM64` | Snapdragon X Elite/Plus laptops, Microsoft Surface Pro ARM | `litho-hub-windows-arm64.exe` |
+| **Docker (OCI Container)** | `AMD64 & ARM64` | Docker Compose, Podman, Kubernetes, Synology / QNAP NAS | `ghcr.io/geostratum/lithotheque-server:latest` |
 
-Download the latest version from the **[Official GitHub Releases](https://github.com/GeoStratum/lithotheque-server/releases/latest)**.
+Download the latest version from the **[Official GitHub Releases](https://github.com/GeoStratum/lithotheque-server/releases/latest)** or pull the container from GHCR.
 
 ---
 
 ## 🚀 Quick Start (5 Minutes)
+
+### Via Docker Compose (Recommended for Containerized Environments)
+
+```yaml
+# docker-compose.yml
+services:
+  lithotheque-server:
+    image: ghcr.io/geostratum/lithotheque-server:latest
+    container_name: lithotheque-server
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "8080:8080/tcp"
+      - "51820:51820/udp"
+    volumes:
+      - ./config:/etc/litho-hub
+      - ./data:/var/lib/litho-hub/data
+      - ./exports:/var/lib/litho-hub/exports
+    environment:
+      - PUID=1000
+      - PGID=1000
+```
+
+Start the container:
+```bash
+docker compose up -d
+```
 
 ### On Debian / Ubuntu Linux
 
