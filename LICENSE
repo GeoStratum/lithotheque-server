@@ -1,0 +1,32 @@
+GEOSTRATUM COMMERCIAL & PROPRIETARY EVALUATION LICENSE
+Version 1.0 (2026)
+
+Copyright (c) 2026 GeoStratum. All rights reserved.
+Official Website: https://geostratum.eu
+
+IMPORTANT - READ CAREFULLY BEFORE ACCESSING, DOWNLOADING OR USING:
+This repository and the binary packages, artifacts, scripts, and documentation distributed through it ("Software") are proprietary products of GeoStratum. By accessing, downloading, or using this Software, you agree to be bound by the terms and conditions of this Agreement.
+
+1. PROPRIETARY RIGHTS & RETENTION OF OWNERSHIP
+The Software, including without limitation its architecture, data models, compiled binaries, compiled bytecode, graphical user interfaces, documentation, trade dress, and trademarks, is protected by copyright, intellectual property laws, and international treaty provisions. GeoStratum retains sole and exclusive title, copyright, and all other proprietary rights in and to the Software. This Agreement does not convey to you any ownership rights or title in or to the Software.
+
+2. STRICT PROHIBITION OF REVERSE ENGINEERING, DECOMPILATION & DISASSEMBLY
+You expressly agree NOT to, directly or indirectly:
+a) Decompile, disassemble, reverse engineer, decrypt, extract, deobfuscate, analyze, or otherwise attempt to derive or reconstruct the source code, underlying ideas, algorithms, cryptographic methods, or internal structure of the Software or any part thereof;
+b) Bypass, defeat, tamper with, disable, or circumvent any security measure, digital rights management, license verification mechanism, anti-tamper protection, encryption, obfuscation, or execution checks implemented in the Software;
+c) Modify, adapt, translate, port, or create derivative works based upon the Software in whole or in part;
+d) Sublicense, rent, lease, loan, sell, resell, distribute, outsource, host as a commercial service bureau, or otherwise make available the Software to third parties without an explicit written Commercial Enterprise License signed by GeoStratum.
+
+To the maximum extent permitted by applicable law (including EU Directive 2009/24/EC on the legal protection of computer programs), any permitted interoperability research must be preceded by a formal written request to GeoStratum to provide the necessary interfacing information before any independent technical investigation is conducted.
+
+3. EVALUATION & DEPLOYMENT CONDITIONS
+Unless accompanied by a valid, digitally signed offline GeoStratum Commercial License Key (supporting Team, Base Camp, Promotion, or Site editions):
+a) Binaries distributed via this repository may be executed strictly for internal testing, evaluation, and proof-of-concept purposes;
+b) Production deployment, educational fleet synchronization exceeding demonstration quotas, or embedding into commercial field workflows strictly requires an authorized GeoStratum Commercial License.
+
+4. NO WARRANTY & LIMITATION OF LIABILITY
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL GEOSTRATUM BE LIABLE FOR ANY CLAIM, DAMAGES, LOSS OF GEOLOGICAL DATA, BUSINESS INTERRUPTION, OR OTHER LIABILITY ARISING FROM OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+For licensing inquiries and commercial orders:
+Contact: contact@geostratum.eu / sales@geostratum.eu
+Website: https://geostratum.eu
