@@ -22,10 +22,14 @@ jobs:
       - name: Checkout Façade Repository
         uses: actions/checkout@v4
 
-      # Clone le code source privé depuis Forgejo
-      - name: Fetch Private Source Code from Forgejo
-        run: |
-          git clone --depth 1 "https://oauth2:${{ secrets.FORGEJO_TOKEN }}@git.geostratum.eu/GeoStratum/lithotheque-server-dev.git" .core_source
+      # Clone éphémère du code source privé depuis GitHub (interne à l'organisation GeoStratum)
+      - name: Fetch Private Source Code from Private GitHub Repo
+        uses: actions/checkout@v4
+        with:
+          repository: 'GeoStratum/lithotheque-server-dev'
+          ref: 'main'
+          token: ${{ secrets.CORE_REPO_TOKEN }}
+          path: '.core_source'
 
       - name: Setup Go Environment
         uses: actions/setup-go@v5
