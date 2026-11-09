@@ -1,0 +1,137 @@
+name: Release Lithotheque Hub Multi-Arch
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version tag (e.g. v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build Hardened Multi-Arch Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Façade Repository
+        uses: actions/checkout@v4
+
+      # Clone le code source privé depuis Forgejo
+      - name: Fetch Private Source Code from Forgejo
+        run: |
+          git clone --depth 1 "https://oauth2:${{ secrets.FORGEJO_TOKEN }}@git.geostratum.eu/GeoStratum/lithotheque-server-dev.git" .core_source
+
+      - name: Setup Go Environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Install Hardening Tools
+        run: |
+          go install mvdan.cc/garble@latest
+          sudo apt-get update && sudo apt-get install -y upx-ucl dpkg-dev
+
+      - name: Set Release Version
+        id: vars
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+          fi
+          echo "build_date=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
+
+      # 1. Linux x86_64 (.deb)
+      - name: Build Linux AMD64 Package
+        run: |
+          mkdir -p .core_source/packaging/debian/usr/local/bin
+          cd .core_source
+          GOOS=linux GOARCH=amd64 garble -literals build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o packaging/debian/usr/local/bin/litho-hub ./cmd/litho-hub
+          upx --best packaging/debian/usr/local/bin/litho-hub
+          chmod 755 packaging/debian/DEBIAN/postinst packaging/debian/DEBIAN/prerm packaging/debian/usr/local/bin/litho-hub
+          dpkg-deb --build packaging/debian ../litho-hub_${{ steps.vars.outputs.version }}_amd64.deb
+          cd ..
+
+      # 2. Linux ARM64 (.deb - Raspberry Pi 5, AWS Graviton, Ampere)
+      - name: Build Linux ARM64 Package
+        run: |
+          mkdir -p .core_source/packaging/debian-arm64/usr/local/bin
+          cd .core_source
+          GOOS=linux GOARCH=arm64 garble -literals build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o packaging/debian-arm64/usr/local/bin/litho-hub ./cmd/litho-hub
+          upx --best packaging/debian-arm64/usr/local/bin/litho-hub
+          chmod 755 packaging/debian-arm64/DEBIAN/postinst packaging/debian-arm64/DEBIAN/prerm packaging/debian-arm64/usr/local/bin/litho-hub
+          dpkg-deb --build packaging/debian-arm64 ../litho-hub_${{ steps.vars.outputs.version }}_arm64.deb
+          cd ..
+
+      # 3. Windows x64 (.exe)
+      - name: Build Windows x64 Binary
+        run: |
+          mkdir -p dist/windows/x64
+          cd .core_source
+          GOOS=windows GOARCH=amd64 garble -literals build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o ../dist/windows/x64/litho-hub.exe ./cmd/litho-hub
+          upx --best ../dist/windows/x64/litho-hub.exe
+          cd ..
+
+      # 4. Windows ARM64 (.exe - Snapdragon X Elite, Surface Pro)
+      - name: Build Windows ARM64 Binary
+        run: |
+          mkdir -p dist/windows/arm64
+          cd .core_source
+          GOOS=windows GOARCH=arm64 garble -literals build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o ../dist/windows/arm64/litho-hub.exe ./cmd/litho-hub
+          upx --best ../dist/windows/arm64/litho-hub.exe
+          cd ..
+
+      # Nettoyage des sources avant publication
+      - name: Clean Source Code
+        run: rm -rf .core_source
+
+      # Publication de la Release avec description en anglais et assets téléchargeables
+      - name: Publish Official GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.vars.outputs.version }}
+          name: "Lithotheque Hub ${{ steps.vars.outputs.version }}"
+          body: |
+            ## 🚀 Lithotheque Base Camp Hub - Release ${{ steps.vars.outputs.version }}
+
+            Welcome to the official production release of **Lithotheque Base Camp Hub**.
+            This release provides self-hosted offline synchronization, high-performance structural geology calculations, and automated master GeoPackage GIS exports for the Lithotheque ecosystem.
+
+            ---
+
+            ### 📦 Download Packages
+
+            | Platform | Architecture | Target Devices / Systems | Download Link |
+            | :--- | :--- | :--- | :--- |
+            | **Linux Debian / Ubuntu** | `x86_64` (AMD64) | Enterprise servers, Cloud VMs, Workstations | `litho-hub_${{ steps.vars.outputs.version }}_amd64.deb` |
+            | **Linux ARM64** | `aarch64` (ARM64) | Raspberry Pi 4/5, AWS Graviton, Ampere Altra | `litho-hub_${{ steps.vars.outputs.version }}_arm64.deb` |
+            | **Windows Server & Desktop** | `x86_64` (x64) | Windows 10/11, Windows Server 2019/2022/2025 | `litho-hub-windows-x64.exe` |
+            | **Windows on ARM** | `ARM64` | Snapdragon X Elite/Plus, Surface Pro ARM | `litho-hub-windows-arm64.exe` |
+
+            ---
+
+            ### 🛡️ Security & Integrity
+            - **Hardened Execution**: Obfuscated with Garble, stripped symbol tables, and UPX compressed.
+            - **Post-Quantum Ready**: Compatible with NIST FIPS 204 (ML-DSA) and Ed25519 offline licenses.
+            - **Anti-Reverse Engineering**: Scrambled SHA-512 internal key derivation without plain-text keys.
+
+            ---
+
+            ### 📖 Quick Start
+            1. **Linux**: `sudo dpkg -i litho-hub_${{ steps.vars.outputs.version }}_amd64.deb` (Managed as systemd service).
+            2. **Windows**: Run `litho-hub-windows-x64.exe` or register as a native Windows Service in Session 0.
+            3. Deposit your valid `license.key` in `/etc/litho-hub/` or `C:\ProgramData\Lithotheque Hub\`.
+            4. Access the local web dashboard at `http://127.0.0.1:8080`.
+          draft: false
+          prerelease: false
+          files: |
+            litho-hub_*_amd64.deb
+            litho-hub_*_arm64.deb
+            dist/windows/x64/litho-hub.exe
+            dist/windows/arm64/litho-hub.exe
