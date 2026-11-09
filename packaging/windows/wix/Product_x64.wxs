@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Product Id="*" 
+             Name="Lithotheque Server" 
+             Language="1033" 
+             Version="1.0.0.0" 
+             Manufacturer="GeoStratum" 
+             UpgradeCode="A8C4B132-7F91-4D62-8F51-17C03E482B10">
+        
+        <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+        
+        <MajorUpgrade DowngradeErrorMessage="A newer version of Lithotheque Server is already installed." />
+        <MediaTemplate EmbedCab="yes" />
+
+        <Icon Id="LithoHubIcon" SourceFile="litho-hub.ico" />
+        <Property Id="ARPPRODUCTICON" Value="LithoHubIcon" />
+
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFiles64Folder">
+                <Directory Id="INSTALLFOLDER" Name="Lithotheque Server">
+                    <Component Id="HubExecutable" Guid="72449F60-234B-4E38-A32B-824F3A5EE511">
+                        <File Id="LithoHubExe" Source="litho-hub.exe" KeyPath="yes" />
+                        
+                        <ServiceInstall Id="ServiceInstaller"
+                                        Type="ownProcess"
+                                        Name="LithoHubService"
+                                        DisplayName="Lithotheque Server"
+                                        Description="Lithotheque sovereign offline synchronization and geology hub service"
+                                        Start="auto"
+                                        Account="LocalSystem"
+                                        ErrorControl="normal" />
+                                        
+                        <ServiceControl Id="ServiceControl"
+                                        Name="LithoHubService"
+                                        Start="install"
+                                        Stop="both"
+                                        Remove="uninstall"
+                                        Wait="yes" />
+                    </Component>
+                </Directory>
+            </Directory>
+            
+            <Directory Id="CommonAppDataFolder">
+                <Directory Id="AppDataLithoFolder" Name="Lithotheque Server">
+                    <Component Id="ConfigAndDataFolder" Guid="D2A093D7-61EB-4821-B9D8-6A79F88C0FE4">
+                        <CreateFolder />
+                        <File Id="DefaultConfig" Source="config.json" KeyPath="yes" />
+                    </Component>
+                </Directory>
+            </Directory>
+
+            <Directory Id="ProgramMenuFolder">
+                <Directory Id="ApplicationProgramsFolder" Name="Lithotheque Server">
+                    <Component Id="ApplicationShortcut" Guid="8B93649E-9E01-4475-A134-D9712EF90176">
+                        <Shortcut Id="DashboardShortcut"
+                                  Name="Lithotheque Server Dashboard"
+                                  Description="Open Lithotheque Server local web dashboard"
+                                  Target="[SystemFolder]cmd.exe"
+                                  Arguments='/c start http://localhost:8080'
+                                  Icon="LithoHubIcon" />
+                        <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall" />
+                        <RegistryValue Root="HKCU" Key="Software\GeoStratum\LithoHub" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+                    </Component>
+                </Directory>
+            </Directory>
+            
+            <Directory Id="DesktopFolder" Name="Desktop">
+                <Component Id="DesktopShortcut" Guid="41E268E1-D423-4554-B837-1249A2D022AA">
+                    <Shortcut Id="DesktopWebShortcut"
+                              Name="Lithotheque Server"
+                              Description="Access Lithotheque Server"
+                              Target="[SystemFolder]cmd.exe"
+                              Arguments='/c start http://localhost:8080'
+                              Icon="LithoHubIcon" />
+                    <RegistryValue Root="HKCU" Key="Software\GeoStratum\LithoHub" Name="desktop_shortcut" Type="integer" Value="1" KeyPath="yes" />
+                </Component>
+            </Directory>
+        </Directory>
+
+        <!-- Windows Firewall Configuration via netsh custom actions -->
+        <CustomAction Id="SetNetshCmd" Property="NetshCmdLine" Value="[SystemFolder]cmd.exe" />
+        <CustomAction Id="AddFirewallRuleWG" Property="NetshCmdLine" 
+                      ExeCommand='/c netsh advfirewall firewall add rule name="Lithotheque Server WireGuard (UDP-In 51820)" dir=in action=allow protocol=UDP localport=51820 profile=any' 
+                      Execute="deferred" Impersonate="no" Return="ignore" />
+        <CustomAction Id="AddFirewallRuleWeb" Property="NetshCmdLine" 
+                      ExeCommand='/c netsh advfirewall firewall add rule name="Lithotheque Server Web (TCP-In 8080)" dir=in action=allow protocol=TCP localport=8080 profile=any' 
+                      Execute="deferred" Impersonate="no" Return="ignore" />
+        <CustomAction Id="RemoveFirewallRules" Property="NetshCmdLine" 
+                      ExeCommand='/c netsh advfirewall firewall delete rule name="Lithotheque Server WireGuard (UDP-In 51820)" &amp; netsh advfirewall firewall delete rule name="Lithotheque Server Web (TCP-In 8080)"' 
+                      Execute="deferred" Impersonate="no" Return="ignore" />
+
+        <InstallExecuteSequence>
+            <Custom Action="SetNetshCmd" Before="InstallInitialize">NOT Installed</Custom>
+            <Custom Action="AddFirewallRuleWG" After="InstallFiles">NOT Installed</Custom>
+            <Custom Action="AddFirewallRuleWeb" After="InstallFiles">NOT Installed</Custom>
+            <Custom Action="RemoveFirewallRules" Before="RemoveFiles">(REMOVE="ALL") AND (NOT UPGRADINGPRODUCTCODE)</Custom>
+        </InstallExecuteSequence>
+
+        <Feature Id="ProductFeature" Title="Lithotheque Server" Level="1">
+            <ComponentRef Id="HubExecutable" />
+            <ComponentRef Id="ConfigAndDataFolder" />
+            <ComponentRef Id="ApplicationShortcut" />
+            <ComponentRef Id="DesktopShortcut" />
+        </Feature>
+    </Product>
+</Wix>

@@ -1,0 +1,12 @@
+{
+  "server": {
+    "listen_addr": "0.0.0.0:8080",
+    "data_dir": "C:\\ProgramData\\Lithotheque Server\\data",
+    "export_dir": "C:\\ProgramData\\Lithotheque Server\\exports"
+  },
+  "wireguard": {
+    "enabled": true,
+    "interface": "wg-litho",
+    "listen_port": 51820
+  }
+}

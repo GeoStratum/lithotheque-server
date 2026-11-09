@@ -48,9 +48,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install Hardening Tools
+      - name: Install Hardening Tools & MSI Packager
         run: |
-          sudo apt-get update && sudo apt-get install -y upx-ucl dpkg-dev
+          sudo apt-get update && sudo apt-get install -y upx-ucl dpkg-dev msitools
 
       - name: Set Release Version
         id: vars
@@ -99,37 +99,39 @@ jobs:
             ghcr.io/geostratum/lithotheque-server:${{ steps.vars.outputs.version }}
             ghcr.io/geostratum/lithotheque-server:latest
 
-      # 4. Windows x64 (.exe)
-      - name: Build Windows x64 Binary
+      # 4. Windows x64 (.msi)
+      - name: Build Windows x64 MSI Installer
         run: |
-          mkdir -p dist/windows/x64
           cd .core_source
-          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o ../dist/windows/x64/litho-hub-windows-x64.exe ./cmd/litho-hub
-          upx --best ../dist/windows/x64/litho-hub-windows-x64.exe
-          cd ..
+          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o ../packaging/windows/wix/litho-hub.exe ./cmd/litho-hub
+          upx --best ../packaging/windows/wix/litho-hub.exe
+          cd ../packaging/windows/wix
+          wixl -v Product_x64.wxs -o ../../../litho-hub_${{ steps.vars.outputs.version }}_windows_x64.msi
+          cd ../../..
 
-      # 5. Windows ARM64 (.exe - Snapdragon X Elite, Windows on ARM)
-      - name: Build Windows ARM64 Binary
+      # 5. Windows ARM64 (.msi - Windows on ARM)
+      - name: Build Windows ARM64 MSI Installer
         run: |
-          mkdir -p dist/windows/arm64
           cd .core_source
-          GOOS=windows GOARCH=arm64 go build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o ../dist/windows/arm64/litho-hub-windows-arm64.exe ./cmd/litho-hub
-          cd ..
+          GOOS=windows GOARCH=arm64 go build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o ../packaging/windows/wix/litho-hub.exe ./cmd/litho-hub
+          cd ../packaging/windows/wix
+          wixl -v Product_arm64.wxs -o ../../../litho-hub_${{ steps.vars.outputs.version }}_windows_arm64.msi
+          cd ../../..
 
       # Nettoyage des sources avant publication
       - name: Clean Source Code
-        run: rm -rf .core_source
+        run: rm -rf .core_source packaging/windows/wix/litho-hub.exe
 
       # Publication de la Release avec description en anglais et assets téléchargeables
       - name: Publish Official GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.vars.outputs.version }}
-          name: "Lithotheque Hub ${{ steps.vars.outputs.version }}"
+          name: "Lithotheque Server ${{ steps.vars.outputs.version }}"
           body: |
-            ## 🚀 Lithotheque Base Camp Hub - Release ${{ steps.vars.outputs.version }}
+            ## 🚀 Lithotheque Server - Release ${{ steps.vars.outputs.version }}
 
-            Welcome to the official production release of **Lithotheque Base Camp Hub** (`lithotheque-server`).
+            Welcome to the official production release of **Lithotheque Server** (`lithotheque-server`).
             This release provides self-hosted offline synchronization, high-performance structural geology calculations, and automated master GeoPackage GIS exports for the Lithotheque ecosystem.
 
             ---
@@ -140,8 +142,8 @@ jobs:
             | :--- | :--- | :--- | :--- |
             | **Linux Debian / Ubuntu** | `x86_64` (AMD64) | Enterprise servers, Cloud VMs, Workstations | `litho-hub_${{ steps.vars.outputs.version }}_amd64.deb` |
             | **Linux ARM64** | `aarch64` (ARM64) | Raspberry Pi 4/5, AWS Graviton, Ampere Altra | `litho-hub_${{ steps.vars.outputs.version }}_arm64.deb` |
-            | **Windows Server & Desktop** | `x86_64` (x64) | Windows 10/11, Windows Server 2019/2022/2025 | `litho-hub-windows-x64.exe` |
-            | **Windows on ARM** | `ARM64` | Windows on ARM (Snapdragon X) | `litho-hub-windows-arm64.exe` |
+            | **Windows Server & Desktop** | `x86_64` (x64) | Windows 10/11, Windows Server 2019/2022/2025 | `litho-hub_${{ steps.vars.outputs.version }}_windows_x64.msi` |
+            | **Windows on ARM** | `ARM64` | Windows on ARM | `litho-hub_${{ steps.vars.outputs.version }}_windows_arm64.msi` |
             | **Docker Multi-Arch** | `AMD64 & ARM64` | Docker, Kubernetes, Portainer, TrueNAS | `ghcr.io/geostratum/lithotheque-server:${{ steps.vars.outputs.version }}` |
 
             ---
@@ -169,14 +171,14 @@ jobs:
 
             ### 📖 Quick Start
             1. **Linux**: `sudo dpkg -i litho-hub_${{ steps.vars.outputs.version }}_amd64.deb` (Managed as systemd service).
-            2. **Windows**: Run `litho-hub-windows-x64.exe` or register as a native Windows Service in Session 0.
-            3. Deposit your valid `license.key` in `/etc/litho-hub/` or `C:\ProgramData\Lithotheque Hub\`.
+            2. **Windows**: Run `msiexec /i litho-hub_${{ steps.vars.outputs.version }}_windows_x64.msi /quiet` or double-click to install the service.
+            3. Deposit your valid `license.key` in `/etc/litho-hub/` or `C:\ProgramData\Lithotheque Server\`.
             4. Access the local web dashboard at `http://127.0.0.1:8080`.
           draft: false
           prerelease: false
           files: |
             litho-hub_*_amd64.deb
             litho-hub_*_arm64.deb
-            dist/windows/x64/litho-hub-windows-x64.exe
-            dist/windows/arm64/litho-hub-windows-arm64.exe
+            litho-hub_*_windows_x64.msi
+            litho-hub_*_windows_arm64.msi
             docker-compose.yml
