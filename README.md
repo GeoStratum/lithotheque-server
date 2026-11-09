@@ -1,4 +1,4 @@
-# Espace Professionnel : lithotheque-server
+# Lithotheque Server
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/GeoStratum/lithotheque-server/main/docs/assets/geostratum_logo.svg" alt="GeoStratum Logo" width="100" height="100" onerror="this.style.display='none'">
@@ -9,12 +9,12 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/GeoStratum/lithotheque-server/releases/latest"><img src="https://img.shields.io/github/v/release/GeoStratum/lithotheque-server?color=blue&label=Latest%20Release" alt="Latest Release"></a>
-  <a href="https://ghcr.io/geostratum/lithotheque-server"><img src="https://img.shields.io/badge/Container-GHCR%20Docker-blue?logo=docker" alt="Docker Container"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GeoStratum%20Commercial-blue.svg" alt="Commercial License"></a>
-  <a href="#supported-platforms--architectures"><img src="https://img.shields.io/badge/Platform-Linux%20%7C%20Windows%20%7C%20Docker%20(x64%20%26%20ARM64)-orange.svg" alt="Platforms"></a>
-  <a href="https://github.com/GeoStratum/lithotheque-server/actions"><img src="https://img.shields.io/badge/CI%2FCD-Passing-brightgreen.svg" alt="CI/CD Status"></a>
-  <a href="#accessibility-wcag-22-aa"><img src="https://img.shields.io/badge/WCAG%202.2-Level%20AA%20Compliant-success.svg" alt="WCAG 2.2 AA"></a>
+  <a href="https://github.com/GeoStratum/lithotheque-server/releases/latest"><img src="https://img.shields.io/badge/Release-v1.0.0-0969da?style=flat-square&logo=github" alt="Latest Release"></a>
+  <a href="https://ghcr.io/geostratum/lithotheque-server"><img src="https://img.shields.io/badge/Container-GHCR%20Docker-2496ed?style=flat-square&logo=docker" alt="Docker Container"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GeoStratum%20Commercial-blue?style=flat-square" alt="Commercial License"></a>
+  <a href="#supported-platforms--architectures"><img src="https://img.shields.io/badge/Platform-Linux%20%7C%20Windows%20%7C%20Docker-f0883e?style=flat-square" alt="Platforms"></a>
+  <a href="https://github.com/GeoStratum/lithotheque-server/actions/workflows/release.yml"><img src="https://img.shields.io/badge/CI%2FCD-Automated-2ea44f?style=flat-square&logo=githubactions" alt="CI/CD Status"></a>
+  <a href="#accessibility-wcag-22-aa"><img src="https://img.shields.io/badge/WCAG%202.2-Level%20AA%20Compliant-238636?style=flat-square" alt="WCAG 2.2 AA"></a>
 </p>
 
 ---
@@ -72,8 +72,8 @@ Official releases provide pre-compiled, self-contained packages for standard OS 
 | :--- | :--- | :--- | :--- |
 | **Linux Debian / Ubuntu** | `x86_64` (AMD64) | Enterprise servers, Cloud VMs, Field laptops (Dell, Lenovo) | `litho-hub_<version>_amd64.deb` |
 | **Linux Debian / Raspberry Pi** | `aarch64` (ARM64) | Raspberry Pi 4 / 5, AWS Graviton, Ampere Altra | `litho-hub_<version>_arm64.deb` |
-| **Windows Desktop & Server** | `x86_64` (x64) | Windows 10/11, Windows Server 2019/2022/2025 | `litho-hub-windows-x64.exe` |
-| **Windows on ARM** | `ARM64` | Windows on ARM (Snapdragon X) | `litho-hub-windows-arm64.exe` |
+| **Windows Desktop & Server** | `x86_64` (x64) | Windows 10/11, Windows Server 2019/2022/2025 | `litho-hub-windows-x64.msi` |
+| **Windows on ARM** | `ARM64` | Windows on ARM | `litho-hub-windows-arm64.msi` |
 | **Docker (OCI Container)** | `AMD64 & ARM64` | Docker Compose, Podman, Kubernetes, Synology / QNAP NAS | `ghcr.io/geostratum/lithotheque-server:latest` |
 
 Download the latest version from the **[Official GitHub Releases](https://github.com/GeoStratum/lithotheque-server/releases/latest)** or pull the container from GHCR.

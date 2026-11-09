@@ -13,7 +13,7 @@ Lithotheque Hub is natively compiled without any external runtime or interpreter
 | **Linux (Debian 11+, Ubuntu 20.04+, RHEL 9+)** | `x86_64` (AMD64) | `.deb` package or standalone binary | Native `systemd` daemon |
 | **Linux ARM (Debian, Ubuntu, Raspberry Pi OS 64-bit)** | `aarch64` (ARM64) | `.deb` package or standalone binary | Native `systemd` daemon |
 | **Windows Server (2019, 2022, 2025) & Windows 10/11** | `x86_64` (x64) | Standalone `.exe` binary | Native Windows Service (`services.msc`) |
-| **Windows on ARM (Snapdragon X Elite/Plus, Surface ARM)** | `ARM64` | Standalone `.exe` binary | Native Windows Service (`services.msc`) |
+| **Windows on ARM** | `ARM64` | Standalone `.exe` binary | Native Windows Service (`services.msc`) |
 
 ---
 
