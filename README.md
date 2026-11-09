@@ -9,10 +9,17 @@
 </p>
 
 <p align="center">
-  <a href="https://ghcr.io/geostratum/lithotheque-server"><img src="https://img.shields.io/badge/Docker-GHCR-2496ed?style=flat-square&logo=docker" alt="Docker Container"></a>
   <a href="#supported-platforms--architectures"><img src="https://img.shields.io/badge/Platform-Linux%20%7C%20Windows%20%7C%20ARM64-f0883e?style=flat-square" alt="Supported Platforms"></a>
+  <a href="https://ghcr.io/geostratum/lithotheque-server"><img src="https://img.shields.io/badge/Container-GHCR%20Docker-2496ed?style=flat-square&logo=docker" alt="Docker Container"></a>
   <a href="https://wireguard.com"><img src="https://img.shields.io/badge/Network-WireGuard%20P2P-88171a?style=flat-square&logo=wireguard" alt="WireGuard P2P"></a>
+  <a href="#asymmetric-cryptographic-device-binding--qr-code-enrollment"><img src="https://img.shields.io/badge/Security-Hardware%20Binding%20(P--256)-555555?style=flat-square" alt="Hardware P-256 Binding"></a>
+  <a href="#core-capabilities"><img src="https://img.shields.io/badge/PQC-NIST%20FIPS%20204%20Ready-6f42c1?style=flat-square" alt="Post-Quantum Ready"></a>
+</p>
+
+<p align="center">
   <a href="#export-formats--gis-interoperability"><img src="https://img.shields.io/badge/GIS-GeoPackage%20%7C%20QGIS-589632?style=flat-square&logo=qgis" alt="GIS Interoperability"></a>
+  <a href="#enterprise-grade-system-reliability"><img src="https://img.shields.io/badge/Database-Embedded%20SQLite%20WAL-003B57?style=flat-square&logo=sqlite" alt="SQLite WAL"></a>
+  <a href="#core-capabilities"><img src="https://img.shields.io/badge/Architecture-Zero--Cloud%20Edge-00ADD8?style=flat-square&logo=go" alt="Zero-Cloud Edge"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-GeoStratum%20Commercial-blue?style=flat-square" alt="Commercial License"></a>
 </p>
 
