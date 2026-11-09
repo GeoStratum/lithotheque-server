@@ -9,7 +9,6 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/GeoStratum/lithotheque-server/releases/latest"><img src="https://img.shields.io/badge/Release-v1.0.0-0969da?style=flat-square&logo=github" alt="Latest Release"></a>
   <a href="https://ghcr.io/geostratum/lithotheque-server"><img src="https://img.shields.io/badge/Docker-GHCR-2496ed?style=flat-square&logo=docker" alt="Docker Container"></a>
   <a href="#supported-platforms--architectures"><img src="https://img.shields.io/badge/Platform-Linux%20%7C%20Windows%20%7C%20ARM64-f0883e?style=flat-square" alt="Supported Platforms"></a>
   <a href="https://wireguard.com"><img src="https://img.shields.io/badge/Network-WireGuard%20P2P-88171a?style=flat-square&logo=wireguard" alt="WireGuard P2P"></a>
