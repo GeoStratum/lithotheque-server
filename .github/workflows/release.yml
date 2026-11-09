@@ -104,16 +104,16 @@ jobs:
         run: |
           mkdir -p dist/windows/x64
           cd .core_source
-          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o ../dist/windows/x64/litho-hub.exe ./cmd/litho-hub
-          upx --best ../dist/windows/x64/litho-hub.exe
+          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o ../dist/windows/x64/litho-hub-windows-x64.exe ./cmd/litho-hub
+          upx --best ../dist/windows/x64/litho-hub-windows-x64.exe
           cd ..
 
-      # 5. Windows ARM64 (.exe - Snapdragon X Elite, Surface Pro)
+      # 5. Windows ARM64 (.exe - Snapdragon X Elite, Windows on ARM)
       - name: Build Windows ARM64 Binary
         run: |
           mkdir -p dist/windows/arm64
           cd .core_source
-          GOOS=windows GOARCH=arm64 go build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o ../dist/windows/arm64/litho-hub.exe ./cmd/litho-hub
+          GOOS=windows GOARCH=arm64 go build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o ../dist/windows/arm64/litho-hub-windows-arm64.exe ./cmd/litho-hub
           cd ..
 
       # Nettoyage des sources avant publication
@@ -141,7 +141,7 @@ jobs:
             | **Linux Debian / Ubuntu** | `x86_64` (AMD64) | Enterprise servers, Cloud VMs, Workstations | `litho-hub_${{ steps.vars.outputs.version }}_amd64.deb` |
             | **Linux ARM64** | `aarch64` (ARM64) | Raspberry Pi 4/5, AWS Graviton, Ampere Altra | `litho-hub_${{ steps.vars.outputs.version }}_arm64.deb` |
             | **Windows Server & Desktop** | `x86_64` (x64) | Windows 10/11, Windows Server 2019/2022/2025 | `litho-hub-windows-x64.exe` |
-            | **Windows on ARM** | `ARM64` | Snapdragon X Elite/Plus, Surface Pro ARM | `litho-hub-windows-arm64.exe` |
+            | **Windows on ARM** | `ARM64` | Windows on ARM (Snapdragon X) | `litho-hub-windows-arm64.exe` |
             | **Docker Multi-Arch** | `AMD64 & ARM64` | Docker, Kubernetes, Portainer, TrueNAS | `ghcr.io/geostratum/lithotheque-server:${{ steps.vars.outputs.version }}` |
 
             ---
@@ -177,6 +177,6 @@ jobs:
           files: |
             litho-hub_*_amd64.deb
             litho-hub_*_arm64.deb
-            dist/windows/x64/litho-hub.exe
-            dist/windows/arm64/litho-hub.exe
+            dist/windows/x64/litho-hub-windows-x64.exe
+            dist/windows/arm64/litho-hub-windows-arm64.exe
             docker-compose.yml

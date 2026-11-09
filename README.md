@@ -72,8 +72,8 @@ Official releases provide pre-compiled, self-contained packages for standard OS 
 | :--- | :--- | :--- | :--- |
 | **Linux Debian / Ubuntu** | `x86_64` (AMD64) | Enterprise servers, Cloud VMs, Field laptops (Dell, Lenovo) | `litho-hub_<version>_amd64.deb` |
 | **Linux Debian / Raspberry Pi** | `aarch64` (ARM64) | Raspberry Pi 4 / 5, AWS Graviton, Ampere Altra | `litho-hub_<version>_arm64.deb` |
-| **Windows Desktop & Server** | `x86_64` (x64) | Windows 10/11, Windows Server 2019/2022/2025 | `litho-hub.exe` |
-| **Windows on ARM** | `ARM64` | Snapdragon X Elite/Plus laptops, Microsoft Surface Pro ARM | `litho-hub-windows-arm64.exe` |
+| **Windows Desktop & Server** | `x86_64` (x64) | Windows 10/11, Windows Server 2019/2022/2025 | `litho-hub-windows-x64.exe` |
+| **Windows on ARM** | `ARM64` | Windows on ARM (Snapdragon X) | `litho-hub-windows-arm64.exe` |
 | **Docker (OCI Container)** | `AMD64 & ARM64` | Docker Compose, Podman, Kubernetes, Synology / QNAP NAS | `ghcr.io/geostratum/lithotheque-server:latest` |
 
 Download the latest version from the **[Official GitHub Releases](https://github.com/GeoStratum/lithotheque-server/releases/latest)** or pull the container from GHCR.
