@@ -12,7 +12,7 @@ This document provides an exhaustive reference of error codes, diagnostic recipe
 | :--- | :--- | :--- | :--- |
 | **`ERR_LIC_NOT_FOUND`** | Critical | `license.key` file is missing from the configured path. | Place a valid `license.key` into `/etc/litho-hub/` or `C:\ProgramData\Lithotheque Hub\`. |
 | **`ERR_LIC_INVALID_SIG`** | Critical | Cryptographic signature verification failed (Ed25519/Dilithium). | File was corrupted or modified. Redownload the untouched key from your GeoStratum portal. |
-| **`ERR_LIC_EXPIRED`** | High | Annual subscription license period has elapsed. | Contact GeoStratum sales (`sales@geostratum.eu`) to renew your subscription. |
+| **`ERR_LIC_EXPIRED`** | High | Annual subscription license period has elapsed. | Contact GeoStratum (`communication@geostratum.eu`) to renew your subscription. |
 | **`ERR_LIC_PEER_QUOTA`** | Medium | Active connected devices exceed licensed capacity (`max_peers`). | Upgrade your commercial tier (e.g., from *Team* [5] to *Base Camp* [20] or *Promotion* [50]). |
 
 ---

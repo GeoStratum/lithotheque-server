@@ -41,5 +41,5 @@ Licensing is verified 100% locally using **digital asymmetric signatures**:
 ## 4. Inquiries & Sales
 
 To request an enterprise quote, academic discount, or evaluation trial:
-- **Email**: [sales@geostratum.eu](mailto:sales@geostratum.eu) / [contact@geostratum.eu](mailto:contact@geostratum.eu)
+- **Email**: [communication@geostratum.eu](mailto:communication@geostratum.eu)
 - **Website**: [https://geostratum.eu](https://geostratum.eu)
