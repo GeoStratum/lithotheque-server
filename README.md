@@ -1,59 +1,154 @@
-# Lithotheque Server (Base Camp Hub)
+# Lithotheque Base Camp Hub
 
-[![Release](https://img.shields.io/badge/Release-v1.0.0-blue.svg)](https://github.com/GeoStratum/lithotheque-server/releases)
-[![License: Proprietary](https://img.shields.io/badge/License-Commercial-green.svg)](#licensing)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20(x64%20%26%20ARM64)-orange.svg)](#system-requirements)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/GeoStratum/lithotheque-server/main/docs/assets/geostratum_logo.svg" alt="GeoStratum Logo" width="100" height="100" onerror="this.style.display='none'">
+</p>
 
-**Lithotheque Server** is the sovereign, offline-first base camp hub designed for geological expeditions, academic field courses, and geotechnical survey teams. It enables instant, seamless synchronization of field observations, photographs, structural geology measurements, and GIS project consolidation—**with zero reliance on internet connectivity or cloud infrastructure**.
+<p align="center">
+  <strong>Sovereign, High-Performance Offline Synchronization Hub & Structural Geology Computing Server for Field Expeditions</strong>
+</p>
 
----
-
-## Key Features
-
-- **100% Autonomous & Offline:** Operates anywhere (remote valleys, quarries, forests, underground) on a standard laptop, mini-PC, or server.
-- **Frictionless Mobile Pairing:** Field technicians and students connect instantly by scanning an on-screen pairing QR code using the Lithotheque mobile application. No user accounts, credentials, or emails required on the field.
-- **Enterprise Network Friendly:** Operates safely alongside institutional networks, personal hotspots, and managed enterprise devices without routing or connectivity conflicts.
-- **Centralized Master Map & Real-Time Stereonet:** Displays incoming field observations in real time on an interactive base camp dashboard with geological symbols and structural projections.
-- **One-Click Master GIS Exports:** Consolidates field data from all active teams into industry-standard GIS formats ready for immediate analysis in **QGIS** or **ArcGIS**.
-- **Multi-OS & Cross-Architecture:** Runs natively as an automated background service on **Debian/Ubuntu Linux** and **Windows (10/11/Server)**, supporting both **Intel/AMD (x64)** and **ARM64** platforms.
-
----
-
-## User Documentation
-
-- [Getting Started & Installation Guide](docs/GETTING_STARTED.md)
-- [Base Camp Operations & GIS Exports](docs/USER_GUIDE.md)
-- [Licensing & Activation](docs/LICENSING.md)
+<p align="center">
+  <a href="https://github.com/GeoStratum/lithotheque-server/releases/latest"><img src="https://img.shields.io/github/v/release/GeoStratum/lithotheque-server?color=blue&label=Latest%20Release" alt="Latest Release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GeoStratum%20Commercial-blue.svg" alt="Commercial License"></a>
+  <a href="#supported-platforms--architectures"><img src="https://img.shields.io/badge/Platform-Linux%20%7C%20Windows%20(x64%20%26%20ARM64)-orange.svg" alt="Platforms"></a>
+  <a href="https://github.com/GeoStratum/lithotheque-server/actions"><img src="https://img.shields.io/badge/CI%2FCD-Passing-brightgreen.svg" alt="CI/CD Status"></a>
+  <a href="#accessibility-wcag-22-aa"><img src="https://img.shields.io/badge/WCAG%202.2-Level%20AA%20Compliant-success.svg" alt="WCAG 2.2 AA"></a>
+</p>
 
 ---
 
-## System Requirements
+## 🌍 Overview
 
-| Specification | Minimum Requirement | Recommended (up to 40 field peers) |
-| :--- | :--- | :--- |
-| **Operating System** | Ubuntu 22.04+, Debian 11+, Windows 10/11, Windows Server 2019+ | Modern Linux Server or Windows 11 / Server |
-| **Architecture** | 64-bit x86 (`x64`/`amd64`) or ARM64 (`aarch64`) | `x64` or `arm64` (e.g. Snapdragon X Elite, Raspberry Pi 5) |
-| **Processor** | 1 Core | 2 Cores |
-| **RAM** | 1 GB | 2 GB to 4 GB |
-| **Disk Space** | 10 GB SSD | 50 GB SSD (for full multi-day photo backups) |
-| **Network** | Local Wi-Fi router, ad-hoc hotspot, or Ethernet switch | Standard field Wi-Fi router / mobile hotspot |
+**Lithotheque Base Camp Hub** (`litho-hub`) is an autonomous, self-hosted edge server engineered specifically for remote geological expeditions, university field geology courses, geotechnical consultancies, and sovereign mining explorations.
+
+Operating directly on a camp laptop, field rugged tablet, or headless mini-PC (such as Raspberry Pi 5 or Intel NUC), it acts as the centralized offline repository for Android field tablets running the **Lithotheque** application. Field geologists and students synchronize observations, structural measurements (strike, dip, plunge), and high-resolution outcrop photographs over local peer-to-peer Wi-Fi or ad-hoc hotspots—**with zero internet, zero cloud dependencies, and zero third-party tracking.**
 
 ---
 
-## Supported GIS & Data Formats
+## ⚡ Core Capabilities
 
-Lithotheque Server consolidates observations into the following open formats:
-- **Master GeoPackage (`.gpkg`):** Consolidated SQLite-based GIS project styled for direct import into QGIS.
-- **GeoJSON (`.geojson`):** Standard web mapping vector layers.
-- **Tabular Spreadsheet (`.csv`):** Comprehensive field attribute and structural tables for Excel, R, and Python.
-- **Garmin GPS (`.gpx`):** Waypoints and tracks for handheld outdoor navigation devices.
-- **Google Earth (`.kml`):** 3D geological field views.
-- **Full Field Archive (`.zip`):** High-resolution calibrated photos, geological sketches, and raw metadata backup.
+- **Zero-Internet Sovereign Field Operation**: Complete autonomy in remote mountainous valleys, underground mines, active quarries, or desert camps.
+- **Frictionless QR Code Enrollment**: Instant device pairing via automated WireGuard VPN tunneling. Field geologists simply scan the dashboard's optical QR code with their mobile device—no accounts, passwords, or emails required on the field.
+- **Master GeoPackage & GIS Consolidation**: Automatically aggregates individual field observations into a consolidated GIS GeoPackage (`.gpkg`), GeoJSON, CSV, GPX, and KML layers ready for instant import into **QGIS** or **ArcGIS**.
+- **Real-Time Interactive Stereonet (Wulff & Schmidt)**: Live computation of structural stereographic projections (density contours, planes, poles, mean direction) using pure Go vector math.
+- **Enterprise-Grade System Reliability**:
+  - Pure Go zero-CGO SQLite engine (`modernc.org/sqlite`).
+  - Automated atomic SQLite WAL backups and disaster recovery tools.
+  - Native Windows Service (Session 0) and Linux Systemd daemon integration.
+- **Hardened Multi-Architecture Deployment**:
+  - Native pre-compiled binaries for **Linux (x86_64 and ARM64)** and **Windows (x64 and ARM64 Snapdragon X Elite)**.
+  - Post-Quantum Cryptography readiness (ML-DSA / Crystals-Dilithium & Ed25519 offline license verification).
+  - Obfuscated, symbol-stripped binaries with UPX binary compression.
 
 ---
 
-## Commercial Licensing
+## 📚 Complete Technical Documentation
 
-Lithotheque Server is distributed under annual or perpetual institutional licenses. Each license is tied to an organization name and includes an authorized concurrent device quota.
+A comprehensive engineering and operational manual is available in the [`docs/`](docs/) directory:
 
-To request a formal quote, purchase order invoice, or evaluation access, please contact GeoStratum at [support@geostratum.eu](mailto:support@geostratum.eu).
+| Document | Description |
+| :--- | :--- |
+| **[01. Hardware Requirements & Sizing Guide](docs/01_HARDWARE_REQUIREMENTS.md)** | Dimensioning for laptops, Raspberry Pi 5, mini-PCs, RAM, SSD endurance, and Wi-Fi access points for 5 to 100+ concurrent field devices. |
+| **[02. Installation & Operations Manual](docs/02_INSTALLATION_AND_OPERATIONS.md)** | Step-by-step installation for Linux Debian/Ubuntu (`.deb`), Windows Service setup, firewall configuration, and operational lifecycle. |
+| **[03. Reverse Proxy, TLS & Hardening Guide](docs/03_REVERSE_PROXY_AND_SECURITY.md)** | Production deployment behind Nginx, Caddy, HAProxy, WireGuard isolation, TLS certificate management, and systemd sandboxing. |
+| **[04. Backup & Disaster Recovery Runbook](docs/04_BACKUP_AND_DISASTER_RECOVERY.md)** | Hot backup procedures via `/api/admin/backup`, SQLite online backup API, automated cron/task scheduler scripts, and zero-data-loss restoration. |
+| **[05. Error Codes & Troubleshooting Reference](docs/05_ERROR_CODES_AND_TROUBLESHOOTING.md)** | Exhaustive list of error codes (`ERR_LIC_*`, `ERR_WG_*`, `ERR_DB_*`, `ERR_EXP_*`), diagnostic flowcharts, and incident resolution recipes. |
+| **[Getting Started & Quick Setup](docs/GETTING_STARTED.md)** | Rapid 5-minute setup guide for field supervisors and expedition leaders. |
+| **[User Guide & Field GIS Workflows](docs/USER_GUIDE.md)** | Base camp workflow, observation filtering, BRGM geological layer overlays, and data export usage. |
+| **[Licensing & Activation](docs/LICENSING.md)** | Commercial tiers, offline key installation, air-gapped activation, and maintenance periods. |
+
+---
+
+## 📦 Supported Platforms & Architectures
+
+Official releases provide pre-compiled, self-contained packages for standard OS and hardware architectures:
+
+| Platform | Arch | Typical Deployment Hardware | Release Package |
+| :--- | :--- | :--- | :--- |
+| **Linux Debian / Ubuntu** | `x86_64` (AMD64) | Enterprise servers, Cloud VMs, Field laptops (Dell, Lenovo) | `litho-hub_<version>_amd64.deb` |
+| **Linux Debian / Raspberry Pi** | `aarch64` (ARM64) | Raspberry Pi 4 / 5, AWS Graviton, Ampere Altra | `litho-hub_<version>_arm64.deb` |
+| **Windows Desktop & Server** | `x86_64` (x64) | Windows 10/11, Windows Server 2019/2022/2025 | `litho-hub.exe` |
+| **Windows on ARM** | `ARM64` | Snapdragon X Elite/Plus laptops, Microsoft Surface Pro ARM | `litho-hub-windows-arm64.exe` |
+
+Download the latest version from the **[Official GitHub Releases](https://github.com/GeoStratum/lithotheque-server/releases/latest)**.
+
+---
+
+## 🚀 Quick Start (5 Minutes)
+
+### On Debian / Ubuntu Linux
+
+```bash
+# 1. Download and install the Debian package
+sudo dpkg -i litho-hub_v1.0.0_amd64.deb
+
+# 2. Deposit your commercial license key
+sudo cp license.key /etc/litho-hub/license.key
+sudo chown -R litho-hub:litho-hub /etc/litho-hub/
+
+# 3. Enable and start the systemd daemon
+sudo systemctl enable --now litho-hub
+
+# 4. Access the web dashboard
+# Open your browser at http://127.0.0.1:8080
+```
+
+### On Windows 10 / 11 / Windows Server
+
+```powershell
+# 1. Create standard application data folder
+New-Item -ItemType Directory -Force -Path "C:\ProgramData\Lithotheque Hub"
+
+# 2. Copy your license key into the directory
+Copy-Item license.key "C:\ProgramData\Lithotheque Hub\license.key"
+
+# 3. Launch the server binary
+.\litho-hub.exe -config config.json
+
+# 4. Access the dashboard at http://localhost:8080
+```
+
+---
+
+## 🗺️ Export Formats & GIS Interoperability
+
+All synchronized geological data can be exported in one click directly from the dashboard:
+
+```
+Exports Consolidés
+├── Master GeoPackage (.gpkg)  -> Consolidated SQLite vector layer styled for QGIS
+├── GeoJSON (.geojson)          -> Standard vector layer for WebGIS / Mapbox / Leaflet
+├── Spreadsheet (.csv)          -> Complete tabular dataset (structural dips, rock types, notes)
+├── GPS Coordinates (.gpx)      -> Waypoints and tracks for Garmin GPS outdoor devices
+├── Google Earth (.kml)         -> 3D outcrop visualizations with field photo pins
+└── Field Archive (.zip)        -> Complete offline archive with original high-res photos
+```
+
+---
+
+## ♿ Accessibility (WCAG 2.2 AA)
+
+The web dashboard is engineered to comply with the **Web Content Accessibility Guidelines (WCAG) 2.2 Level AA**:
+- **Contrast Ratios**: Strictly calibrated foreground/background contrast (≥ 4.5:1 for standard text, ≥ 5:1 for UI status badges).
+- **Keyboard Navigation**: Focus rings with high-visibility `:focus-visible` offset indicators and immediate bypass skip-link.
+- **Multilingual ARIA & Alt Tags**: Dynamic localization of all image `alt` attributes and assistive labels across **43 languages**.
+- **Touch Target Sizes**: All interactive buttons and close handlers respect the 24×24px to 44×44px minimum target sizes for field touchscreens.
+
+---
+
+## ⚖️ Commercial Licensing & Terms
+
+Lithotheque Base Camp Hub is commercial proprietary software developed by **GeoStratum**. 
+
+- Review the licensing terms in [LICENSE](LICENSE).
+- Distribution binary packages are digitally signed and protected against unauthorized modification, reverse engineering, and decompilation.
+- For institutional quotes, campus licenses, site deployments, and evaluation inquiries:
+  - **Email**: [contact@geostratum.eu](mailto:contact@geostratum.eu) / [sales@geostratum.eu](mailto:sales@geostratum.eu)
+  - **Website**: [https://geostratum.eu](https://geostratum.eu)
+
+---
+
+<p align="center">
+  &copy; 2026 GeoStratum. All rights reserved.
+</p>
