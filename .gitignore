@@ -1,0 +1,27 @@
+# ==============================================================================
+# .gitignore pour lithotheque-server (Dépôt Privé GitHub avec CI/CD)
+# ==============================================================================
+
+# Ne jamais commiter de code source Go ni de binaires dans ce dépôt façade
+*.go
+bin/
+*.exe
+*.deb
+*.msi
+*.db
+
+# Clés et secrets
+*.key
+*.pem
+*.token
+
+# Fichiers temporaires et de clonage éphémère du runner
+.core_source/
+tmp/
+temp/
+*.log
+
+# Fichiers d'éditeurs
+.idea/
+.vscode/
+.DS_Store
