@@ -33,6 +33,18 @@ Operating directly on an expedition server, rugged field tablet, Docker containe
 
 ---
 
+## Screenshots
+
+| Dashboard & Interactive Map | Observation Details & ICS Stratigraphy |
+| :---: | :---: |
+| ![Dashboard Overview](docs/images/dashboard-overview.webp) | ![Observation Details](docs/images/observation-details.webp) |
+
+| WireGuard QR Pairing | License Activation |
+| :---: | :---: |
+| ![WireGuard QR Pairing](docs/images/wireguard-qr-pairing.webp) | ![License Activation](docs/images/license-activation.webp) |
+
+---
+
 ## ⚡ Core Capabilities
 
 - **Zero-Internet Sovereign Field Operation**: Complete autonomy in remote mountainous valleys, underground mines, active quarries, or exploration sites.
