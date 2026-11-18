@@ -31,17 +31,9 @@
 
 Operating directly on an expedition server, rugged field tablet, Docker container, or headless mini-PC (such as Raspberry Pi 5 or Intel NUC), it acts as the centralized offline repository for mobile devices running the **Lithotheque** application (Android & iOS). Field geologists and students synchronize observations, structural measurements (strike, dip, plunge), and high-resolution outcrop photographs over encrypted WireGuard peer-to-peer Wi-Fi or ad-hoc hotspots—**with zero internet, zero cloud dependencies, and zero third-party tracking.**
 
----
-
-## Screenshots
-
-| Dashboard & Interactive Map | Observation Details & ICS Stratigraphy |
-| :---: | :---: |
-| ![Dashboard Overview](docs/images/dashboard-overview.webp) | ![Observation Details](docs/images/observation-details.webp) |
-
-| WireGuard QR Pairing | License Activation |
-| :---: | :---: |
-| ![WireGuard QR Pairing](docs/images/wireguard-qr-pairing.webp) | ![License Activation](docs/images/license-activation.webp) |
+<p align="center">
+  <img src="docs/images/dashboard-overview.webp" alt="Lithotheque Server Dashboard & Interactive Map" width="820">
+</p>
 
 ---
 

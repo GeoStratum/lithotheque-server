@@ -43,3 +43,10 @@ Licensing is verified 100% locally using **digital asymmetric signatures**:
 To request an enterprise quote, academic discount, or evaluation trial:
 - **Email**: [communication@geostratum.eu](mailto:communication@geostratum.eu)
 - **Website**: [https://www.geostratum.eu/](https://www.geostratum.eu/)
+
+---
+
+## Activation Interface
+
+![License Activation](images/license-activation.webp)
+

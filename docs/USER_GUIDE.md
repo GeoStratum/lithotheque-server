@@ -51,3 +51,12 @@ Click any of the consolidated export buttons in the right sidebar to download an
 | **Garmin GPS** | `.gpx` | Waypoints and tracks for field handheld GPS devices. |
 | **Google Earth** | `.kml` | 3D outcrop visualizations with field photo markers. |
 | **Complete Archive**| `.zip` | Full uncompressed package containing original high-resolution photos, metadata, and SQLite database. |
+
+---
+
+## Field Observation Details & WireGuard Pairing
+
+![Observation Details & ICS Stratigraphy](images/observation-details.webp)
+
+![WireGuard QR Pairing](images/wireguard-qr-pairing.webp)
+
