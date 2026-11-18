@@ -111,6 +111,9 @@ jobs:
           done
 
       # 3. Build & Push Multi-Arch Docker Image (GHCR)
+      - name: Patch Dockerfile builder to trixie (GCC 14 for C++23 mdspan)
+        run: sed -i 's/golang:1.26-bookworm/golang:1.26-trixie/' .core_source/Dockerfile
+
       - name: Build and Push Docker Multi-Arch Image
         uses: docker/build-push-action@v6
         with:
