@@ -48,9 +48,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install Hardening Tools & MSI Packager
+      - name: Install Hardening Tools, RPM & MSI Packager
         run: |
-          sudo apt-get update && sudo apt-get install -y upx-ucl dpkg-dev msitools
+          sudo apt-get update && sudo apt-get install -y upx-ucl dpkg-dev msitools rpm
 
       - name: Set Release Version
         id: vars
@@ -72,7 +72,8 @@ jobs:
           upx --best packaging/debian/usr/local/bin/litho-hub
           cp packaging/debian/usr/local/bin/litho-hub packaging/docker/litho-hub-amd64
           chmod 755 packaging/debian/DEBIAN/postinst packaging/debian/DEBIAN/prerm packaging/debian/usr/local/bin/litho-hub
-          dpkg-deb --build packaging/debian ../litho-hub_${{ steps.vars.outputs.version }}_amd64.deb
+          dpkg-deb --build packaging/debian ../lithotheque-server_${{ steps.vars.outputs.version }}_amd64.deb
+          tar -czf ../lithotheque-server_${{ steps.vars.outputs.version }}_linux_amd64.tar.gz -C packaging/debian/usr/local/bin litho-hub
           cd ..
 
       # 2. Linux ARM64 (.deb - Raspberry Pi 5, AWS Graviton) & Docker binary
@@ -84,8 +85,30 @@ jobs:
           upx --best packaging/debian-arm64/usr/local/bin/litho-hub
           cp packaging/debian-arm64/usr/local/bin/litho-hub packaging/docker/litho-hub-arm64
           chmod 755 packaging/debian-arm64/DEBIAN/postinst packaging/debian-arm64/DEBIAN/prerm packaging/debian-arm64/usr/local/bin/litho-hub
-          dpkg-deb --build packaging/debian-arm64 ../litho-hub_${{ steps.vars.outputs.version }}_arm64.deb
+          dpkg-deb --build packaging/debian-arm64 ../lithotheque-server_${{ steps.vars.outputs.version }}_arm64.deb
+          tar -czf ../lithotheque-server_${{ steps.vars.outputs.version }}_linux_arm64.tar.gz -C packaging/debian-arm64/usr/local/bin litho-hub
           cd ..
+
+      # 2b. Linux RPM Packages (x86_64 & aarch64)
+      - name: Build Linux RPM Packages
+        run: |
+          for ARCH_PAIR in "amd64:x86_64" "arm64:aarch64"; do
+            GO_ARCH="${ARCH_PAIR%%:*}"
+            RPM_ARCH="${ARCH_PAIR##*:}"
+            DEB_DIR=".core_source/packaging/debian"
+            [ "$GO_ARCH" = "arm64" ] && DEB_DIR=".core_source/packaging/debian-arm64"
+            TOPDIR="$(pwd)/rpmbuild-${RPM_ARCH}"
+            mkdir -p "$TOPDIR"/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+            cp "${DEB_DIR}/usr/local/bin/litho-hub" "$TOPDIR/SOURCES/"
+            cp ".core_source/native/litho_geo_engine.so" "$TOPDIR/SOURCES/" 2>/dev/null || touch "$TOPDIR/SOURCES/litho_geo_engine.so"
+            cp "${DEB_DIR}/etc/litho-hub/config.json" "$TOPDIR/SOURCES/"
+            cp "${DEB_DIR}/etc/systemd/system/litho-hub.service" "$TOPDIR/SOURCES/"
+            cp "${DEB_DIR}/usr/share/applications/litho-hub.desktop" "$TOPDIR/SOURCES/"
+            cp "${DEB_DIR}/usr/share/icons/hicolor/scalable/apps/litho-hub.svg" "$TOPDIR/SOURCES/"
+            rpmbuild -bb --target "$RPM_ARCH" --define "_topdir $TOPDIR" .core_source/packaging/rpm/litho-hub.spec
+            cp "$TOPDIR/RPMS/${RPM_ARCH}/"*.rpm "./lithotheque-server_${{ steps.vars.outputs.version }}_${RPM_ARCH}.rpm"
+            rm -rf "$TOPDIR"
+          done
 
       # 3. Build & Push Multi-Arch Docker Image (GHCR)
       - name: Build and Push Docker Multi-Arch Image
@@ -106,7 +129,7 @@ jobs:
           GOOS=windows GOARCH=amd64 go build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o ../packaging/windows/wix/litho-hub.exe ./cmd/litho-hub
           upx --best ../packaging/windows/wix/litho-hub.exe
           cd ../packaging/windows/wix
-          wixl -v Product_x64.wxs -o ../../../litho-hub_${{ steps.vars.outputs.version }}_windows_x64.msi
+          wixl -v Product_x64.wxs -o ../../../lithotheque-server_${{ steps.vars.outputs.version }}_windows_x64.msi
           cd ../../..
 
       # 5. Windows ARM64 (.msi - Windows on ARM)
@@ -115,7 +138,7 @@ jobs:
           cd .core_source
           GOOS=windows GOARCH=arm64 go build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o ../packaging/windows/wix/litho-hub.exe ./cmd/litho-hub
           cd ../packaging/windows/wix
-          wixl -v Product_arm64.wxs -o ../../../litho-hub_${{ steps.vars.outputs.version }}_windows_arm64.msi
+          wixl -v Product_arm64.wxs -o ../../../lithotheque-server_${{ steps.vars.outputs.version }}_windows_arm64.msi
           cd ../../..
 
       # Nettoyage des sources avant publication
@@ -140,10 +163,10 @@ jobs:
 
             | Platform | Architecture | Target Devices / Systems | Download Link |
             | :--- | :--- | :--- | :--- |
-            | **Linux Debian / Ubuntu** | `x86_64` (AMD64) | Enterprise servers, Cloud VMs, Workstations | `litho-hub_${{ steps.vars.outputs.version }}_amd64.deb` |
-            | **Linux ARM64** | `aarch64` (ARM64) | Raspberry Pi 4/5, AWS Graviton, Ampere Altra | `litho-hub_${{ steps.vars.outputs.version }}_arm64.deb` |
-            | **Windows Server & Desktop** | `x86_64` (x64) | Windows 10/11, Windows Server 2019/2022/2025 | `litho-hub_${{ steps.vars.outputs.version }}_windows_x64.msi` |
-            | **Windows on ARM** | `ARM64` | Windows on ARM | `litho-hub_${{ steps.vars.outputs.version }}_windows_arm64.msi` |
+            | **Linux Debian / Ubuntu** | `x86_64` (AMD64) | Enterprise servers, Cloud VMs, Workstations | `lithotheque-server_${{ steps.vars.outputs.version }}_amd64.deb` |
+            | **Linux ARM64** | `aarch64` (ARM64) | Raspberry Pi 4/5, AWS Graviton, Ampere Altra | `lithotheque-server_${{ steps.vars.outputs.version }}_arm64.deb` |
+            | **Windows Server & Desktop** | `x86_64` (x64) | Windows 10/11, Windows Server 2019/2022/2025 | `lithotheque-server_${{ steps.vars.outputs.version }}_windows_x64.msi` |
+            | **Windows on ARM** | `ARM64` | Windows on ARM | `lithotheque-server_${{ steps.vars.outputs.version }}_windows_arm64.msi` |
             | **Docker Multi-Arch** | `AMD64 & ARM64` | Docker, Kubernetes, Portainer, TrueNAS | `ghcr.io/geostratum/lithotheque-server:${{ steps.vars.outputs.version }}` |
 
             ---
@@ -170,15 +193,19 @@ jobs:
             ---
 
             ### 📖 Quick Start
-            1. **Linux**: `sudo dpkg -i litho-hub_${{ steps.vars.outputs.version }}_amd64.deb` (Managed as systemd service).
-            2. **Windows**: Run `msiexec /i litho-hub_${{ steps.vars.outputs.version }}_windows_x64.msi /quiet` or double-click to install the service.
+            1. **Linux**: `sudo dpkg -i lithotheque-server_${{ steps.vars.outputs.version }}_amd64.deb` (Managed as systemd service).
+            2. **Windows**: Run `msiexec /i lithotheque-server_${{ steps.vars.outputs.version }}_windows_x64.msi /quiet` or double-click to install the service.
             3. Deposit your valid `license.key` in `/etc/litho-hub/` or `C:\ProgramData\Lithotheque Server\`.
             4. Access the local web dashboard at `http://127.0.0.1:8080`.
           draft: false
           prerelease: false
           files: |
-            litho-hub_*_amd64.deb
-            litho-hub_*_arm64.deb
-            litho-hub_*_windows_x64.msi
-            litho-hub_*_windows_arm64.msi
+            lithotheque-server_*_amd64.deb
+            lithotheque-server_*_arm64.deb
+            lithotheque-server_*_x86_64.rpm
+            lithotheque-server_*_aarch64.rpm
+            lithotheque-server_*_linux_amd64.tar.gz
+            lithotheque-server_*_linux_arm64.tar.gz
+            lithotheque-server_*_windows_x64.msi
+            lithotheque-server_*_windows_arm64.msi
             docker-compose.yml
