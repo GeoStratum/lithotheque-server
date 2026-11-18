@@ -71,7 +71,7 @@ jobs:
           GOOS=linux GOARCH=amd64 go build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o packaging/debian/usr/local/bin/litho-hub ./cmd/litho-hub
           upx --best packaging/debian/usr/local/bin/litho-hub
           cp packaging/debian/usr/local/bin/litho-hub packaging/docker/litho-hub-amd64
-          chmod 755 packaging/debian/DEBIAN/postinst packaging/debian/DEBIAN/prerm packaging/debian/usr/local/bin/litho-hub
+          chmod 755 packaging/debian/DEBIAN/postinst packaging/debian/DEBIAN/prerm packaging/debian/DEBIAN/postrm packaging/debian/usr/local/bin/litho-hub
           dpkg-deb --build packaging/debian ../lithotheque-server_${{ steps.vars.outputs.version }}_amd64.deb
           tar -czf ../lithotheque-server_${{ steps.vars.outputs.version }}_linux_amd64.tar.gz -C packaging/debian/usr/local/bin litho-hub
           cd ..
@@ -84,7 +84,7 @@ jobs:
           GOOS=linux GOARCH=arm64 go build -ldflags="-s -w -buildid= -X main.Version=${{ steps.vars.outputs.version }} -X main.BuildDate=${{ steps.vars.outputs.build_date }}" -o packaging/debian-arm64/usr/local/bin/litho-hub ./cmd/litho-hub
           upx --best packaging/debian-arm64/usr/local/bin/litho-hub
           cp packaging/debian-arm64/usr/local/bin/litho-hub packaging/docker/litho-hub-arm64
-          chmod 755 packaging/debian-arm64/DEBIAN/postinst packaging/debian-arm64/DEBIAN/prerm packaging/debian-arm64/usr/local/bin/litho-hub
+          chmod 755 packaging/debian-arm64/DEBIAN/postinst packaging/debian-arm64/DEBIAN/prerm packaging/debian-arm64/DEBIAN/postrm packaging/debian-arm64/usr/local/bin/litho-hub
           dpkg-deb --build packaging/debian-arm64 ../lithotheque-server_${{ steps.vars.outputs.version }}_arm64.deb
           tar -czf ../lithotheque-server_${{ steps.vars.outputs.version }}_linux_arm64.tar.gz -C packaging/debian-arm64/usr/local/bin litho-hub
           cd ..
