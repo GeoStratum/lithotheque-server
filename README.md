@@ -188,7 +188,8 @@ Lithotheque Base Camp Hub is commercial proprietary software developed by **GeoS
 - Distribution binary packages are digitally signed and protected against unauthorized modification, reverse engineering, and decompilation.
 - For institutional quotes, campus licenses, site deployments, and evaluation inquiries:
   - **Email**: [communication@geostratum.eu](mailto:communication@geostratum.eu)
-  - **Website**: [https://www.geostratum.eu/](https://www.geostratum.eu/)
+  - **Order & Team Licensing**: [https://www.geostratum.eu/en-us/lithotheque/serveur/](https://www.geostratum.eu/en-us/lithotheque/serveur/)
+  - **Personal Edition (Microsoft Store, 15-day free trial)**: [https://apps.microsoft.com/detail/9NG0MTN8QD4Z](https://apps.microsoft.com/detail/9NG0MTN8QD4Z)
 
 ---
 
