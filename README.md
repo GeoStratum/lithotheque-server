@@ -25,6 +25,28 @@
 
 ---
 
+## 📑 Table of Contents
+
+- [Overview](#-overview)
+- [Core Capabilities](#-core-capabilities)
+- [Supported Platforms & Architectures](#-supported-platforms--architectures)
+- [Quick Start (5 Minutes)](#-quick-start-5-minutes)
+- [Export Formats & GIS Interoperability](#-export-formats--gis-interoperability)
+- [Accessibility (WCAG 2.2 AA)](#-accessibility-wcag-22-aa)
+- [Commercial Licensing & Terms](#️-commercial-licensing--terms)
+
+### Editions & Downloads
+- **Team & Enterprise Licensing**: [https://www.geostratum.eu/en-us/lithotheque/serveur/](https://www.geostratum.eu/en-us/lithotheque/serveur/)
+- **Personal Edition (1 device, Microsoft Store — 15-day free trial)**: [https://apps.microsoft.com/detail/9NG0MTN8QD4Z](https://apps.microsoft.com/detail/9NG0MTN8QD4Z)
+
+<p>
+  <a href="https://get.microsoft.com/installer/download/9NG0MTN8QD4Z?referrer=appbadge" target="_self">
+    <img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200" alt="Get it from Microsoft" />
+  </a>
+</p>
+
+---
+
 ## 🌍 Overview
 
 **lithotheque-server** (`litho-hub`) is an autonomous, self-hosted edge server engineered specifically for remote geological expeditions, university field geology courses, geotechnical consultancies, and sovereign mining explorations.
